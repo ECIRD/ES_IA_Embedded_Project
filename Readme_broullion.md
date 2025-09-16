@@ -51,3 +51,8 @@ Rapport de classification :
     accuracy                         0.8320     10000
    macro avg     0.8326    0.8320    0.8306     10000
 weighted avg     0.8326    0.8320    0.8306     10000
+
+
+	Le modèle prend en entrée des images de taille 32x32 sur trois niveau de couleur (RGB) et après une série de calcul, renvoie un label parmi 10. Pour toutes les couches de conv2D la fonction d'activation ReLu est utilisée pour un linéarité du gradient. Enfin pour la dernière couche la fonction softmax est utilisée ce qui permet de choisir 1 sortie parmi 10.
+    
+	Le model temps à réduire le nombre de pixel/neurone par filtre mais à augmenter le nombre de filtre (max poll 2.2 into conv2D nb filtre x2). On perds en information spatiale mais on gagne en information en profondeur (moins de où mais plus de quoi). De plus le ratio polling/filtre reste quasi constant ce que permet de ne pas faire exploser les coûts. Ça permet au réseau de conserver sa capacité de représentation malgré la compression spatiale.
