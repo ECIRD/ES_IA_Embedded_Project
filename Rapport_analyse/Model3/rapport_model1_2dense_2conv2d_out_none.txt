@@ -125,7 +125,7 @@ Computing AI RT data/code size (target=stm32l4)..
  18     max_pooling2d_11         |                  0.0%   |                  0.0%   [15] 
  20     dense_2_dense            |                  0.0%   |                  2.1%   [16, 17] 
  ------ ------------------------ ------------------------- ------------------------- ---------- 
- macc=12,924,416 weights=986,664 act=143,468 ram_io=0 
+ macc=c weights=986,664 act=143,468 ram_io=0 
  Requested memory size by section - "stm32l4" target 
  ------------------------------ -------- --------- ------- --------- 
  module                             text    rodata    data       bss 
