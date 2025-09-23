@@ -1,0 +1,2 @@
+Accuracy en test sur carte: 81%
+temps d inference theorique: 0,0880408 s
