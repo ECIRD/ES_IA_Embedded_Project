@@ -62,3 +62,6 @@ weighted avg     0.8326    0.8320    0.8306     10000
 Mettre plusieur carte en parrallele pour peu qu'elles ne coutent pas cher (par rapport a l initial)
 
 L'idée est de mettre un modele ayant une accuracy >75% sur plusieur carte peut couteuse en ressource (financiére, en flash ect) pour que le cout soit reduit par rapport au projet de base mais que les performance reste au moins similaire. Plusieur IA donne un resultat et on essaye de determiner un resultat. Peut etre envisager d'entrainer les IA de maniére différente ou faire legerment varier le modele.
+
+
+La limite des modele pour determiner la carte est plus la RAM que la flash
