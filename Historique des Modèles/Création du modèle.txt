@@ -125,6 +125,15 @@ Model0 en resnet
 
 
 	
+Model15
+Reprise du modèle8 en Resnet
+Model15_24			Model15_20		Model15_16
+	Poids : 1M14			Poids : 817K		Poids : 533K
+	Paramètre : 297 554		Paramètre : 209 238	Paramètre : 136 610
+	ROM : 1M11			ROM : 			ROM : 519K
+	RAM : 216K			RAM : 			RAM : 147K
+	Accuracy : 85.65		Accuracy : 85.19	Accuracy : 79.69
+					==>				Peut monter à 84
 
 
 

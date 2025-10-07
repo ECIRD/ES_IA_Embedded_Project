@@ -1,0 +1,58 @@
+def Resnet_block(x_in, filters, size, num_comb):
+    x = x_in
+
+    # Première convolution
+    x = layers.Conv2D(filters, (size, size), padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    
+    # Convolutions supplémentaires
+    for i in range(1, num_comb):
+        x = layers.Activation('relu')(x)
+        x = layers.Conv2D(filters, (size, size), padding='same', use_bias=False)(x)
+        x = layers.BatchNormalization()(x)
+
+
+    # Shortcut : si le nombre de filtres change, on l’adapte
+    if x_in.shape[-1] != filters:
+        shortcut = layers.Conv2D(filters, (1,1), padding='same', use_bias=False)(x_in)
+        shortcut = layers.BatchNormalization()(shortcut)
+    else:
+        shortcut = x_in
+
+    # Ajout du shortcut
+    x = layers.add([x, shortcut])
+    x = layers.Activation('relu')(x)
+
+    return x
+
+def model0(input_shape=(32,32,3), num_classes=10):
+    inputs = layers.Input(shape=input_shape)
+
+
+    FILTER = 20
+    # Bloc initial
+    x = layers.Conv2D(FILTER, (3,3), padding='same', use_bias=False)(inputs)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+
+    # --- Blocs ResNet ---
+    x = Resnet_block(x, filters=FILTER, size=3, num_comb=3)
+    x = layers.MaxPooling2D((2,2))(x)
+    x = layers.Dropout(0.2)(x)
+
+    x = Resnet_block(x, filters=FILTER*2, size=3, num_comb=3)
+    x = layers.MaxPooling2D((2,2))(x)
+    x = layers.Dropout(0.3)(x)
+
+    x = Resnet_block(x, filters=FILTER*4, size=3, num_comb=3)
+    x = layers.MaxPooling2D((2,2))(x)
+    x = layers.Dropout(0.3)(x)
+
+    # Classification finale
+    x = layers.GlobalAveragePooling2D()(x)
+    x = layers.Dense(128, activation='relu')(x)
+    x = layers.Dropout(0.4)(x)
+    outputs = layers.Dense(10, activation='softmax')(x)
+
+    model = models.Model(inputs, outputs, name="Simple_ResNet")
+    return model
