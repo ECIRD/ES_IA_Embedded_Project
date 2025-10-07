@@ -1,0 +1,130 @@
+Création du modèle :
+
+Model0 (modèle de base) :
+	Paramètre : 2 916 394
+	ROM : 2M39
+	RAM : 148k
+	Accuracy : 81.34%
+
+Model1
+Les paramètres de Modèle0 qui prenaient le plus de place en flash et en RAM on été supprimés (Dense et la dernière couche de convolution)
+	Poids : 416K
+	Paramètre : 107 306
+	ROM : 294K
+	RAM : 145K
+	Accuracy : 78.02%
+
+Model2 ==> Meilleur des petits (Sans Resnet)
+On passe la deuxième (et dernière) couche à 32 filtre
+	Poids : 193K
+	Paramètre : 49 642
+	ROM : 139K
+	RAM : 145K
+	Accuracy : 77.12%
+
+Model3
+Exploration du modèle 2 avec une couche à 64 neuronnee
+	Poids : 628K
+	Paramètre : 160 682
+	ROM : 197K
+	RAM : 145K
+	Accuracy : 77.38%
+
+Model4
+Exploration du modèle 2 avec une première couche à 16 filtres puis une deuxième à 32
+	Poids : 165K
+	Paramètre : 42 394
+	ROM : 111K
+	RAM : 81K
+	Accuracy : 74.71
+
+Model5
+Reprise du modèle initiale avec uniquement une couche dense de 128 au lieux de 2 + demande sur Internet de modèle CNN à 88%
+	Poids : 2M11
+	Paramètre : 552 362
+	ROM : 1M25
+	RAM : 147K
+	Accuracy : 84.02 ==> 88 si on le pousse à 200 epoch et 64 de batch
+
+
+Model6
+Reprise du modèle 5 avec une couche à 256
+	Poids : 4M62
+	Paramètre : 1 208 618
+	ROM : 4M52
+	RAM : 150K
+	Accuracy : 85.96
+
+
+Model7
+On réduit la taille d'entrée des filtres pour que ça passe.
+	Poids : 1M2
+	Paramètre : 313 754
+	ROM : 1M15
+	RAM : 84K
+	Accuracy : 79.42
+
+Model8
+Reprise du modèle initiale avec 3 convolution dans chaque groupe de convolution
+	Poids : 2M85
+	Paramètre : 747 674
+	ROM : 1M99
+	RAM : 155K
+	Accuracy : 85.63
+
+Model9 : Pas réalisable
+Reprise du 8 mais en optimisant ses poids (retirer Batch normalisation et à chaque groupe de convolution on augment le nombre de filtre petit à petit)
+	Poids : 2M32
+	Paramètre : 608 010
+	ROM : 2M22
+	RAM : 284K
+	Accuracy : 85.00
+
+Model10 : (à Pousser)
+Model9 aléger
+	Poids : 227K
+	Paramètre : 58 038
+	ROM : 226K
+	RAM : 182K
+	Accuracy : 78.43
+
+Model11 :
+Model10_32
+	Poids : 550K
+	Paramètre : 140 394
+	ROM : 537K
+	RAM : 286K	==> ça passe pas
+	Accuracy : 82.45
+
+Model12:
+Model11 mais avec un bloc de conv en 32 pour éviter les surprise de la RAM
+	Poids : 515K
+	Paramètre : 131 466
+	ROM : 
+	RAM : 
+	Accuracy : 81,06
+
+Model13:
+Model12 et avec 3 convolution par groupe de convolution
+	Poids : 750K
+	Paramètre : 191 130
+	ROM : 737K
+	RAM : 150K
+	Accuracy : 82.15
+
+
+Découverte du Resnet
+
+Model14_32 :			Model14_24			Model14_20		Model14_16			Model14_8
+Model0 en resnet		
+	Poids : 3M70			Poids : 3M07			Poids : 2M80		Poids : 2M57			Poids : 2M23
+	Paramètre : 970 730		Paramètres : 803 570		Paramètres : 734 454	Parametre : 674 554		Paramètres : 583 346
+	ROM : 1M53			ROM : 1M			ROM : 813K		ROM : 637K			ROM : 395K
+	RAM : 275K			RAM : 208K			RAM : 175K		RAM : 141K			RAM : 75K
+	Accuracy :85.13			Accuracy : 84.16		Accuracy : 84.55	Accuracy : 82.17		Accuracy : 68.35
+
+
+	
+
+
+
