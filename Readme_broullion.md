@@ -62,19 +62,3 @@ weighted avg     0.8326    0.8320    0.8306     10000
 Mettre plusieur carte en parrallele pour peu qu'elles ne coutent pas cher (par rapport a l initial)
 
 L'idée est de mettre un modele ayant une accuracy >75% sur plusieur carte peut couteuse en ressource (financiére, en flash ect) pour que le cout soit reduit par rapport au projet de base mais que les performance reste au moins similaire. Plusieur IA donne un resultat et on essaye de determiner un resultat. Peut etre envisager d'entrainer les IA de maniére différente ou faire legerment varier le modele.
-
-## Etude du microcontrôleur cible
-
-Pour embarquer un programme sur un microcontrôleur, il faut s’assurer non seulement qu’il dispose d’assez de mémoire ROM (mémoire Flash) pour stocker le programme et les poids du réseau de neurones, mais aussi qu’il possède suffisamment de mémoire RAM (mémoire volatile) pour exécuter le programme sans saturer ses capacités de calcul. Ces deux paramètres sont cruciaux en IA embarquée, car les modèles modernes sont de plus en plus volumineux et nécessitent un grand nombre d’opérations.
-
-En pratique :
-
-La ROM contient les poids du modèle et le code de l’application. Si la taille du réseau dépasse la capacité de la Flash interne (souvent limitée à quelques Mo sur STM32), il devient impossible de le déployer sans compression (quantization, pruning) ou ajout de mémoire externe.
-
-La RAM est sollicitée lors de l’inférence pour stocker les activations intermédiaires (sorties de chaque couche), les buffers temporaires et les variables nécessaires aux calculs. Même si le modèle rentre en ROM, il peut être inutilisable si les activations dépassent la capacité RAM disponible.
-
-Enfin, au-delà de la mémoire, il faut tenir compte de la puissance de calcul du microcontrôleur. Les opérations de convolution et de multiplication matricielle sont coûteuses, et leur exécution doit rester compatible avec les contraintes temps réel. Des optimisations logicielles (ex. CMSIS-NN) ou matérielles (NPU embarqué) sont souvent nécessaires.
-
-Ainsi, la combinaison ROM + RAM + puissance de calcul constitue la principale limite dans l’IA embarquée. Dans le cas d’un modèle comme VGG11 simplifié (~5 Mo), la taille est trop importante pour la ROM et la RAM risque aussi d’être fortement sollicitée à cause des couches fully connected. Cela montre la nécessité d’utiliser des modèles plus compacts (MobileNet, SqueezeNet) ou d’appliquer des techniques de compression pour les rendre réellement exploitables sur STM32.
-
-Nous utilisons dans un premier temps la STM32L4R9I-DISCO qui est une carte de démo de STMicroelectronics. Elle 
