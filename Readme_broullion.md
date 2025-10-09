@@ -62,3 +62,43 @@ weighted avg     0.8326    0.8320    0.8306     10000
 Mettre plusieur carte en parrallele pour peu qu'elles ne coutent pas cher (par rapport a l initial)
 
 L'idée est de mettre un modele ayant une accuracy >75% sur plusieur carte peut couteuse en ressource (financiére, en flash ect) pour que le cout soit reduit par rapport au projet de base mais que les performance reste au moins similaire. Plusieur IA donne un resultat et on essaye de determiner un resultat. Peut etre envisager d'entrainer les IA de maniére différente ou faire legerment varier le modele.
+
+## Cartes pour petit modéle
+
+NUCLEO-L452RE — meilleur compromis coût / RAM (>100 KB)
+
+Flash : 512 KB
+
+RAM : 160 KB
+
+Cœur / fréquence : Cortex-M4 (jusqu’à ~80 MHz) (L4 = basse consommation mais correctement cadencé).
+
+Prix indicatif : ~$15 (Mouser / distributeurs).
+
+Pourquoi : RAM > 150 KB (donc ton besoin est couvert) tout en restant l’un des Nucleo les moins chers. 
+
+
+NUCLEO-F446RE — très bonne fréquence, faible coût
+
+Flash : 512 KB
+
+RAM : 128 KB (>100 KB)
+
+Cœur / fréquence : Cortex-M4 up to 180 MHz → très rapide pour des inférences et traitement.
+
+Prix : carte Nucleo classique, généralement bon marché (~10–25 € selon vendeur).
+
+Pourquoi : si tu veux plus de performance CPU (180 MHz) et que 128 KB de RAM suffit (tu as demandé >100 KB), c’est une excellente option à petit prix. 
+
+
+NUCLEO-G0B1RE
+
+Flash : 256 KB
+
+RAM : 144 KB (un peu plus que ton max, mais très proche)
+
+Cœur : Cortex-M0+ @ 64 MHz
+
+Prix : ~16–18 €
+
+Commentaire : architecture récente, basse conso, excellente efficacité énergétique.
