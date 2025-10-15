@@ -136,4 +136,49 @@ Model15_24			Model15_20		Model15_16
 					==>				Peut monter à 84
 
 
+Model16
+Reprise du model2 en Resnet : 1 Resnet à 2 conv par couche de convolution
+Model16_24
+	Poids : 86k
+	Paramètre : 22 114
+	ROM : 
+	RAM :
+	Accuracy : 70.15
+
+Model17
+Reprise du model2 en Resnet : 2 convolution en Resnet par couche de convolution
+Model17_24
+	Poids : 185K
+	Paramètre : 47 474
+	ROM : 
+	RAM :
+	Accuracy : 76.67
+
+Model18
+Reprise du model2 en Resnet : 2 convolution en Resnet avec une profondeur de 3, par couche de convolution
+Model18_24
+	Poids : 267K
+	Paramètre : 68 594
+	ROM : 
+	RAM :
+	Accuracy : 80.50
+
+Model19
+Mix entre Resnet et VGG, pour faire en sorte que la RAM ne sature pas
+Model19_8
+	Poids : 233K
+	Paramètre : 59 714
+	ROM : 230K
+	RAM : 83K
+	Accuracy : 80.34
+
+
+
+Model20
+Model20_24			Model20_16
+	Poids : 735K			Poids : 342K
+	Paramètre : 188 018		Paramètre : 87 674
+	ROM : 703K			ROM : 
+	RAM : 208k			RAM :
+	Accuracy : 85.51		Accuracy : 81.88
 
