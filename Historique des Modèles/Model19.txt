@@ -1,0 +1,69 @@
+def Resnet_block(x, filters, size, num_comb,add=False):
+
+    # Shortcut : si le nombre de filtres change, on l’adapte
+    if x.shape[-1] != filters:
+        shortcut = layers.Conv2D(filters, (1,1), padding='same', use_bias=False)(x)
+        shortcut = layers.BatchNormalization()(shortcut)
+    else:
+        shortcut = x
+
+    if (add==True):
+      for i in range(0, num_comb):
+          size = size + 2*i
+          x = layers.Conv2D(filters, (size, size), padding='same', use_bias=False)(x)
+          x = layers.BatchNormalization()(x)
+          x = layers.Activation('relu')(x)
+    else :
+        for i in range(0, num_comb):
+          x = layers.Conv2D(filters, (size, size), padding='same', use_bias=False)(x)
+          x = layers.BatchNormalization()(x)
+          x = layers.Activation('relu')(x)
+
+
+    # Ajout du shortcut
+    x = layers.BatchNormalization()(x)
+    x = layers.add([x, shortcut])
+    x = layers.Activation('relu')(x)
+
+    return x
+
+def build_resnet1(input_shape=(32,32,3), num_classes=10):
+    inputs = layers.Input(shape=input_shape)
+
+    # Bloc initial
+    x = layers.Conv2D(8, (3,3), padding='same', use_bias=False)(inputs)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+
+    # --- Blocs ResNet ---
+    x = Resnet_block(x, filters=8, size=3, num_comb=3)
+    x = Resnet_block(x, filters=8, size=3, num_comb=3)
+    x = layers.MaxPooling2D((2,2))(x)
+    x = layers.Dropout(0.2)(x)
+
+    x = Resnet_block(x, filters=16, size=3, num_comb=3)
+    x = Resnet_block(x, filters=16, size=3, num_comb=3)
+    x = layers.MaxPooling2D((2,2))(x)
+    x = layers.Dropout(0.3)(x)
+
+    x = layers.Conv2D(32, (3, 3), padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.Conv2D(32, (3, 3), padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.MaxPooling2D((2,2))(x)
+    x = layers.Dropout(0.3)(x)
+
+    x = layers.Conv2D(64, (3, 3), padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+
+    # Classification finale
+    x = layers.GlobalAveragePooling2D()(x)
+    x = layers.Dense(128, activation='relu')(x)
+    x = layers.Dropout(0.35)(x)
+    outputs = layers.Dense(10, activation='softmax')(x)
+
+    model = models.Model(inputs, outputs, name="Simple_ResNet")
+    return model
