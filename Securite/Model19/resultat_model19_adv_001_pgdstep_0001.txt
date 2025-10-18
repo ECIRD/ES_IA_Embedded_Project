@@ -1,3 +1,9 @@
+--- Evaluation Results ---
+test acc on clean examples (%): 78.750
+test acc on FGM adversarial examples (%): 42.690
+test acc on PGD adversarial examples (%): 28.060
+
+--- Comparative Table (First 100 samples) ---
 True Label	Clean Prediction	Clean Confidence	FGSM Prediction	FGSM Confidence	PGD Prediction	PGD Confidence
 7	7	0.15224442	5	0.13300659	5	0.16285262
 0	1	0.1457989	3	0.13605207	3	0.15472221
