@@ -1,0 +1,128 @@
+from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler
+
+# 🔸 Fonction de mise à jour du learning rate
+def step_decay(epoch):
+    initial_lr = 0.02
+    drop = 0.96
+    epochs_drop = 1
+    lr = initial_lr * (drop ** (epoch // epochs_drop))
+    return lr
+
+# Affiche si un GPU est détecté (TF choisit automatiquement)
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    print("✅ GPU détecté :", gpus)
+else:
+    print("⚠️ Pas de GPU détecté — entraînement sur CPU.")
+
+# Timer minimal
+class Timer:
+    def __init__(self):
+        self.start = None
+        self.stop = None
+
+    def tic(self):
+        self.start = time.time()
+
+    def toc(self):
+        self.stop = time.time()
+
+    def res(self):
+        return None if self.start is None or self.stop is None else self.stop - self.start
+
+# Chargement et préparation des données CIFAR-10
+class Dataset:
+    def __init__(self, nb_epochs=20, batch_size=64):
+        (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+
+        x_train = x_train.astype('float32') / 255.0
+        x_test  = x_test.astype('float32') / 255.0
+
+        self.x_train = x_train
+        self.y_train = y_train
+
+        self.x_test = x_test
+        self.y_test = y_test
+
+        self.input_shape = self.x_train.shape[1:]
+        self.nb_epochs = nb_epochs
+        self.batch_size = batch_size
+
+        # one-hot
+        self.y_train = tf.keras.utils.to_categorical(self.y_train, 10)
+        self.y_test = tf.keras.utils.to_categorical(self.y_test, 10)
+
+        print("Train:", self.x_train.shape, self.y_train.shape)
+        print("Test: ", self.x_test.shape, self.y_test.shape)
+        print("Epochs:", self.nb_epochs, " Batch size:", self.batch_size)
+
+
+def train_model(data):
+    print("➡️ Construction du modèle...")
+
+    model = model0(data.input_shape)
+
+    # Optimiseur de base
+    opt = tf.keras.optimizers.Adam(learning_rate=0.001)
+
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+    model.summary()
+
+    # 🔸 Scheduler de LR
+    lr_scheduler = tf.keras.callbacks.LearningRateScheduler(step_decay, verbose=0)
+
+    # Sauvegarde du modèle
+    checkpoint_cb = ModelCheckpoint(
+        "best_model.h5",
+        monitor="val_accuracy",
+        mode="max",
+        save_best_only=True,
+        verbose=1
+    )
+
+    # Timer pour l'entraînement
+    t = Timer()
+    t.tic()
+    history = model.fit(
+        data.x_train, data.y_train,
+        validation_data=(data.x_test, data.y_test),
+        epochs=data.nb_epochs,
+        batch_size=data.batch_size,
+        shuffle=True,
+        verbose=2,
+        callbacks=[checkpoint_cb, lr_scheduler]
+    )
+    t.toc()
+    print(f"✅ Entraînement terminé en {t.res():.1f} s")
+    return model, history
+
+# Évaluation
+def test_model(data, model):
+    loss, acc = model.evaluate(data.x_test, data.y_test, verbose=2)
+    print(f"Test loss: {loss:.4f}  Test accuracy: {acc:.4f}")
+
+# (Facultatif) affichage des courbes
+def plot_history(history):
+    plt.figure(figsize=(10,4))
+    plt.subplot(1,2,1)
+    plt.plot(history.history['loss'], label='train loss'); plt.plot(history.history['val_loss'], label='val loss')
+    plt.legend(); plt.title('Loss')
+    plt.subplot(1,2,2)
+    plt.plot(history.history['accuracy'], label='train acc'); plt.plot(history.history['val_accuracy'], label='val acc')
+    plt.legend(); plt.title('Accuracy')
+    plt.show()
+
+# MAIN
+if __name__ == '__main__':
+    NB_EPOCHS = 100
+    BATCH_SIZE = 64  # Si VRAM limitée, réduire à 32 ou 16
+
+    data = Dataset(nb_epochs=NB_EPOCHS, batch_size=BATCH_SIZE)
+    model, history = train_model(data)
+    test_model(data, model)
+    plot_history(history)
+
+    # Sauvegarde
+    model.save("CIFAR10_VGG11_simple.h5")
+    np.save("CIFAR10_xtest.npy", data.x_test)
+    np.save("CIFAR10_ytest.npy", data.y_test)

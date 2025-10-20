@@ -22,6 +22,13 @@ On passe la deuxième (et dernière) couche à 32 filtre
 	RAM : 145K
 	Accuracy : 77.12%
 
+Model2_32 			Model2_20
+	Poids : 193K			Poids : 24 550
+	Paramètre : 49 642		Paramètre : 95K
+	ROM : 139K			ROM :
+	RAM : 145K			RAM :
+	Accuracy : 78.50%		Accuracy : 74.95%
+
 Model3
 Exploration du modèle 2 avec une couche à 64 neuronnee
 	Poids : 628K
@@ -181,4 +188,17 @@ Model20_24			Model20_16
 	ROM : 703K			ROM : 
 	RAM : 208k			RAM :
 	Accuracy : 85.51		Accuracy : 81.88
+
+
+Model21 
+Reprise du model2 avec un nouveau type d'entrainement où le LR décroit au fil des époch
+	Poids : 93K
+	Paramètre : 23 098
+	ROM : 100K
+	RAM : 175K
+	Accuracy : 77.1%
+
+Model22
+Model21 avec moins de RAM
+
 
