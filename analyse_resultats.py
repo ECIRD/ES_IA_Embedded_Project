@@ -21,8 +21,8 @@ for fname in os.listdir("."):
     if not m:
         continue
 
-    adv_str = m.group(1)*10
-    step_str = m.group(2)*10
+    adv_str = m.group(1)
+    step_str = m.group(2)
 
     # Conversion correcte : "001" → 0.001, "01" → 0.01
     adv = int(adv_str) / (10 ** len(adv_str))*10
@@ -76,38 +76,25 @@ for adv in adv_unique:
 plt.plot(adv_unique, clean_avg, '^-', color='green', label="Clean Accuracy (moy.)")
 plt.plot(adv_unique, fgsm_avg, 's--', color='orange', label="FGSM Attack (moy.)")
 
-# Tracer PGD pour chaque step distinct
-first = True
-for step in unique_steps:
-    subset = [r for r in results if r["pgdstep"] == step]
-# Tracer PGD en une seule courbe pour tous les steps
-    adv_all = [r["adv"] for r in results]
-    pgd_all = [r["pgd"] for r in results]
+# Tracer PGD global
+adv_all = [r["adv"] for r in results]
+pgd_all = [r["pgd"] for r in results]
+adv_all, pgd_all = zip(*sorted(zip(adv_all, pgd_all)))
+plt.plot(adv_all, pgd_all, 'o--', color='blue', label="PGD")
 
-# Tri par adv pour que la ligne aille de gauche à droite
-    adv_all, pgd_all = zip(*sorted(zip(adv_all, pgd_all)))
-
-    if first:
-        plt.plot(adv_all, pgd_all, marker='o', linestyle='--', color='blue', label="PGD")
-        first = False
-    else:
-        plt.plot(adv_all, pgd_all, marker='o', linestyle='--', color='blue')
-
-# Affichage des steps au-dessus de chaque point
-    switch = 0
-    for r in results:
-        if switch:
-           plt.text(r["adv"], r["pgd"] + 1.5, f"{r['pgdstep']:.3f}",
-                    ha="right", va="center", fontsize=12, color="black", rotation=0)
-           switch = 0
-        else:
-             plt.text(r["adv"], r["pgd"] + 0.5, f"{r['pgdstep']:.3f}",
-                      ha="left", va="center", fontsize=12, color="black", rotation=0)
-             switch = 1
+# ==========================================================
+# 🏷️ Affichage des steps sans superposition
+# ==========================================================
+# On décale alternativement la position des labels pour éviter qu'ils se chevauchent
+for i, r in enumerate(results):
+    dx = (-0.005 if i % 2 == 0 else 0.005)  # léger décalage horizontal
+    dy = (0 if i % 3 == 0 else 3 if i % 3 == 1 else -5)  # décalage vertical variable
+    plt.text(r["adv"] + dx, r["pgd"] + dy,
+             f"{r['pgdstep']:.3f}",
+             ha="center", va="bottom", fontsize=10, color="black", rotation=0)
 
 # ==========================================================
 # 🎨 Mise en forme du graphique
-# ==========================================================
 plt.xlabel("Attacker budget (adv)")
 plt.ylabel("Accuracy (%)")
 plt.title("Accuracy vs Attacker Budget\n(Clean, FGSM et PGD pour différents steps)")
@@ -115,10 +102,8 @@ plt.grid(True)
 plt.tight_layout()
 
 # ==========================================================
-# 🧩 Bloc de gestion de la légende — activer / modifier ici
+# 🧩 Bloc de légende (modifiable facilement)
 # ==========================================================
-# 🔹 Pour activer la légende → décommente la ligne suivante :
-plt.legend(title="Légende")
-#
+# plt.legend(title="Légende", loc="lower left", frameon=True)
 
 plt.show()
