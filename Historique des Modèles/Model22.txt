@@ -1,0 +1,43 @@
+def model0(input_shape=(32,32,3), num_classes=10):
+    inputs = layers.Input(shape=input_shape)
+
+    FILTER = 12
+
+    # Bloc initial
+    
+    x = layers.Conv2D(FILTER, (3, 3), padding='same', use_bias=False)(inputs)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.Conv2D(FILTER, (3, 3), padding='same', use_bias=False)(inputs)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.MaxPooling2D((2,2))(x)
+    x = layers.Dropout(0.2)(x)
+
+    x = layers.Conv2D(FILTER*2, (3, 3), padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.Conv2D(FILTER*2, (3, 3), padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.MaxPooling2D((2,2))(x)
+    x = layers.Dropout(0.2)(x)
+
+    x = layers.Conv2D(FILTER*4, (3, 3), padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.Conv2D(FILTER*4, (3, 3), padding='same', use_bias=False)(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.MaxPooling2D((2,2))(x)
+    x = layers.Dropout(0.2)(x)
+
+
+    # Classification finale
+    x = layers.GlobalAveragePooling2D()(x)
+    #x = layers.Dense(128, activation='relu')(x)
+    #x = layers.Dropout(0.3)(x)
+    outputs = layers.Dense(10, activation='softmax')(x)
+
+    model = models.Model(inputs, outputs, name="Simple_ResNet")
+    return model

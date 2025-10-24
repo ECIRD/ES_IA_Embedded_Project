@@ -1,0 +1,86 @@
+save path : ./save/tinyvgg_quan/nominal_0.01
+{'data_path': './dataset', 'arch': 'tinyvgg_quan', 'dataset': 'cifar10', 'epochs': 40, 'start_epoch': 0, 'attack_sample_size': 100, 'test_batch_size': 100, 'optimizer': 'SGD', 'schedule': [25, 40], 'gammas': [0.1, 0.1], 'workers': 4, 'ngpu': 0, 'gpu_id': 0, 'print_freq': 100, 'decay': 0.0003, 'momentum': 0.9, 'limit_layer': -1, 'randbet_coeff': 10, 'k_top': 100, 'randbet': False, 'clipping_coeff': 0.0, 'learning_rate': 0.01, 'manualSeed': 7338, 'save_path': './save/tinyvgg_quan/nominal_0.01', 'enable_bfa': False, 'resume': '', 'quan_bitwidth': None, 'reset_weight': False, 'evaluate': False, 'n_iter': 30, 'model_only': False, 'random_bfa': False, 'use_cuda': False}
+Random Seed: 7338
+python version : 3.12.12 | packaged by Anaconda, Inc. | (main, Oct 14 2025, 16:10:16) [MSC v.1929 64 bit (AMD64)]
+torch  version : 2.5.1
+cudnn  version : None
+=> creating model 'tinyvgg_quan'
+=> network :
+ TinyVGG(
+  (features): Sequential(
+    (0): quan_Conv2d(3, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (1): ReLU(inplace=True)
+    (2): quan_Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (3): ReLU(inplace=True)
+    (4): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (5): Dropout2d(p=0.25, inplace=False)
+    (6): quan_Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (7): ReLU(inplace=True)
+    (8): quan_Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (9): ReLU(inplace=True)
+    (10): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (11): Dropout2d(p=0.25, inplace=False)
+  )
+  (classifier): Sequential(
+    (0): quan_Linear(in_features=2048, out_features=10, bias=True)
+  )
+)
+=> do not use any checkpoint for tinyvgg_quan model
+
+==>>[2025-10-22 15:50:50] [Epoch=000/040] [Need: 00:00:00] [LR=0.0100] [Best : Accuracy=0.00, Error=100.00]
+  Epoch: [000][000/500]   Time 21.752 (21.752)   Data 21.670 (21.670)   Loss 2.3031 (2.3031)   Prec@1 13.000 (13.000)   Prec@5 55.000 (55.000)   [2025-10-22 15:51:12]
+  Epoch: [000][100/500]   Time 0.054 (0.269)   Data 0.000 (0.215)   Loss 2.1591 (2.2386)   Prec@1 24.000 (15.416)   Prec@5 70.000 (60.921)   [2025-10-22 15:51:18]
+  Epoch: [000][200/500]   Time 0.054 (0.162)   Data 0.001 (0.108)   Loss 1.9644 (2.1256)   Prec@1 36.000 (21.219)   Prec@5 82.000 (69.468)   [2025-10-22 15:51:23]
+  Epoch: [000][300/500]   Time 0.052 (0.126)   Data 0.000 (0.073)   Loss 1.7301 (2.0326)   Prec@1 36.000 (24.887)   Prec@5 87.000 (74.329)   [2025-10-22 15:51:28]
+  Epoch: [000][400/500]   Time 0.053 (0.108)   Data 0.001 (0.055)   Loss 1.7981 (1.9644)   Prec@1 33.000 (27.474)   Prec@5 87.000 (77.399)   [2025-10-22 15:51:34]
+  **Train** Prec@1 29.500 Prec@5 79.410 Error@1 70.500
+  **Test** Prec@1 45.390 Prec@5 91.130 Error@1 54.610
+=> Obtain best accuracy, and update the best model
+
+==>>[2025-10-22 15:52:03] [Epoch=001/040] [Need: 00:47:09] [LR=0.0100] [Best : Accuracy=45.39, Error=54.61]
+  Epoch: [001][000/500]   Time 22.527 (22.527)   Data 22.447 (22.447)   Loss 1.6821 (1.6821)   Prec@1 29.000 (29.000)   Prec@5 97.000 (97.000)   [2025-10-22 15:52:26]
+  Epoch: [001][100/500]   Time 0.054 (0.277)   Data 0.000 (0.223)   Loss 1.5400 (1.6634)   Prec@1 37.000 (39.089)   Prec@5 91.000 (88.663)   [2025-10-22 15:52:31]
+  Epoch: [001][200/500]   Time 0.054 (0.165)   Data 0.001 (0.112)   Loss 1.7489 (1.6291)   Prec@1 36.000 (40.473)   Prec@5 91.000 (89.363)   [2025-10-22 15:52:36]
+  Epoch: [001][300/500]   Time 0.058 (0.130)   Data 0.001 (0.075)   Loss 1.7331 (1.6147)   Prec@1 38.000 (41.116)   Prec@5 86.000 (89.608)   [2025-10-22 15:52:42]
+  Epoch: [001][400/500]   Time 0.054 (0.138)   Data 0.001 (0.057)   Loss 1.4212 (1.5986)   Prec@1 47.000 (41.763)   Prec@5 96.000 (89.815)   [2025-10-22 15:52:58]
+  **Train** Prec@1 42.534 Prec@5 90.076 Error@1 57.466
+  **Test** Prec@1 54.130 Prec@5 94.180 Error@1 45.870
+=> Obtain best accuracy, and update the best model
+
+==>>[2025-10-22 15:53:27] [Epoch=002/040] [Need: 00:49:34] [LR=0.0100] [Best : Accuracy=54.13, Error=45.87]
+  Epoch: [002][000/500]   Time 21.947 (21.947)   Data 21.869 (21.869)   Loss 1.4469 (1.4469)   Prec@1 51.000 (51.000)   Prec@5 91.000 (91.000)   [2025-10-22 15:53:49]
+  Epoch: [002][100/500]   Time 0.064 (0.276)   Data 0.001 (0.217)   Loss 1.5084 (1.5027)   Prec@1 47.000 (45.762)   Prec@5 91.000 (91.059)   [2025-10-22 15:53:55]
+  Epoch: [002][200/500]   Time 0.053 (0.167)   Data 0.000 (0.109)   Loss 1.4201 (1.4796)   Prec@1 53.000 (46.871)   Prec@5 91.000 (91.493)   [2025-10-22 15:54:01]
+  Epoch: [002][300/500]   Time 0.057 (0.145)   Data 0.000 (0.073)   Loss 1.4112 (1.4662)   Prec@1 53.000 (47.203)   Prec@5 90.000 (91.661)   [2025-10-22 15:54:11]
+  Epoch: [002][400/500]   Time 0.054 (0.123)   Data 0.000 (0.055)   Loss 1.4860 (1.4561)   Prec@1 44.000 (47.524)   Prec@5 92.000 (91.905)   [2025-10-22 15:54:16]
+  **Train** Prec@1 48.068 Prec@5 92.098 Error@1 51.932
+  **Test** Prec@1 58.500 Prec@5 95.230 Error@1 41.500
+=> Obtain best accuracy, and update the best model
+
+==>>[2025-10-22 15:54:46] [Epoch=003/040] [Need: 00:48:19] [LR=0.0100] [Best : Accuracy=58.50, Error=41.50]
+  Epoch: [003][000/500]   Time 21.135 (21.135)   Data 21.054 (21.054)   Loss 1.3205 (1.3205)   Prec@1 57.000 (57.000)   Prec@5 95.000 (95.000)   [2025-10-22 15:55:07]
+  Epoch: [003][100/500]   Time 0.053 (0.264)   Data 0.001 (0.209)   Loss 1.3922 (1.3745)   Prec@1 48.000 (50.762)   Prec@5 93.000 (93.188)   [2025-10-22 15:55:12]
+  Epoch: [003][200/500]   Time 0.053 (0.158)   Data 0.000 (0.105)   Loss 1.5445 (1.3670)   Prec@1 57.000 (51.015)   Prec@5 85.000 (93.020)   [2025-10-22 15:55:18]
+  Epoch: [003][300/500]   Time 0.054 (0.123)   Data 0.001 (0.071)   Loss 1.3152 (1.3639)   Prec@1 54.000 (51.163)   Prec@5 92.000 (93.047)   [2025-10-22 15:55:23]
+  Epoch: [003][400/500]   Time 0.052 (0.106)   Data 0.000 (0.053)   Loss 1.4074 (1.3539)   Prec@1 49.000 (51.406)   Prec@5 93.000 (93.239)   [2025-10-22 15:55:28]
+  **Train** Prec@1 51.664 Prec@5 93.310 Error@1 48.336
+  **Test** Prec@1 61.780 Prec@5 95.830 Error@1 38.220
+=> Obtain best accuracy, and update the best model
+
+==>>[2025-10-22 15:55:57] [Epoch=004/040] [Need: 00:45:59] [LR=0.0100] [Best : Accuracy=61.78, Error=38.22]
+  Epoch: [004][000/500]   Time 20.711 (20.711)   Data 20.618 (20.618)   Loss 1.2327 (1.2327)   Prec@1 57.000 (57.000)   Prec@5 96.000 (96.000)   [2025-10-22 15:56:18]
+  Epoch: [004][100/500]   Time 0.055 (0.260)   Data 0.000 (0.205)   Loss 1.4049 (1.3098)   Prec@1 49.000 (53.139)   Prec@5 91.000 (93.970)   [2025-10-22 15:56:23]
+  Epoch: [004][200/500]   Time 0.052 (0.158)   Data 0.000 (0.103)   Loss 1.3714 (1.2975)   Prec@1 49.000 (53.677)   Prec@5 93.000 (94.090)   [2025-10-22 15:56:29]
+  Epoch: [004][300/500]   Time 0.062 (0.124)   Data 0.001 (0.069)   Loss 1.4368 (1.2907)   Prec@1 48.000 (54.113)   Prec@5 91.000 (94.086)   [2025-10-22 15:56:34]
+  Epoch: [004][400/500]   Time 0.057 (0.107)   Data 0.000 (0.052)   Loss 1.3574 (1.2829)   Prec@1 56.000 (54.509)   Prec@5 93.000 (94.015)   [2025-10-22 15:56:40]
+  **Train** Prec@1 54.702 Prec@5 94.098 Error@1 45.298
+  **Test** Prec@1 64.050 Prec@5 96.350 Error@1 35.950
+=> Obtain best accuracy, and update the best model
+
+==>>[2025-10-22 15:57:26] [Epoch=005/040] [Need: 00:46:04] [LR=0.0100] [Best : Accuracy=64.05, Error=35.95]
+  Epoch: [005][000/500]   Time 25.609 (25.609)   Data 25.476 (25.476)   Loss 1.0963 (1.0963)   Prec@1 64.000 (64.000)   Prec@5 94.000 (94.000)   [2025-10-22 15:57:51]
+  Epoch: [005][100/500]   Time 0.057 (0.539)   Data 0.000 (0.255)   Loss 1.2233 (1.2399)   Prec@1 58.000 (55.921)   Prec@5 94.000 (94.317)   [2025-10-22 15:58:20]
+  Epoch: [005][200/500]   Time 0.055 (0.299)   Data 0.001 (0.128)   Loss 1.2023 (1.2366)   Prec@1 62.000 (55.786)   Prec@5 91.000 (94.473)   [2025-10-22 15:58:26]
+  Epoch: [005][300/500]   Time 0.058 (0.218)   Data 0.001 (0.086)   Loss 1.3000 (1.2255)   Prec@1 51.000 (56.316)   Prec@5 95.000 (94.598)   [2025-10-22 15:58:32]
+  Epoch: [005][400/500]   Time 0.056 (0.177)   Data 0.001 (0.065)   Loss 1.2858 (1.2150)   Prec@1 57.000 (56.681)   Prec@5 92.000 (94.773)   [2025-10-22 15:58:37]
+  **Train** Prec@1 56.864 Prec@5 94.828 Error@1 43.136
