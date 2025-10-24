@@ -1,0 +1,4 @@
+--- Evaluation Results ---
+test acc on clean examples (%): 68.370
+test acc on FGM adversarial examples (%): 47.000
+test acc on PGD adversarial examples (%): 39.710

@@ -83,11 +83,12 @@ Le modèle présente l'avantage d'être embarquable sur plusieurs cartes à faib
 
 Nous avons néanmoins testé certaines attaques sur le modèle.
 
-### Bruit
+### Adversarial
 
+    L'attaque par adversarial consiste bruité une image de maniére a trompé le model. Pour ce faire on peut (dans le cas "boite blanche") 
 > Il est recommandé d'embarquer des modèles légèrement différents ou entraînés différemment pour réduire l'impact de ce type d'attaque sur un ensemble learning.
 
-### Attaque laser
+### Bit flip
 
 > Le défaut de notre protocole d'évaluation actuel est que nous n'attaquons qu'un modèle à la fois ; nous ne pouvons donc pas tester pleinement la résistance de l'ensemble à une attaque laser.
 
