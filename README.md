@@ -1,5 +1,26 @@
 # ES_IA_Embedded_Project
 
+## 1. Analyse du modèle existant (Model0)
+
+* Le modèle étudié est une version simplifiée du VGG11, adaptée au jeu de données CIFAR-10. Il s’agit d’un réseau convolutionnel profond (CNN) construit de manière séquentielle, comprenant trois blocs convolutionnels suivis de couches entièrement connectées.
+
+* Chaque bloc comporte :
+
+	- une couches Conv2D (3×3)
+	- une fonction d'activations ReLU,
+	- une couche de Batch Normalization pour stabiliser l’apprentissage,
+	- une couches Conv2D (3×3),
+	- une fonction d'activations ReLU,
+	- une couche de Batch Normalization pour stabiliser l’apprentissage,
+	- une application d'un Dropout
+	- un MaxPooling(2×2) pour diminuer la taille des cartes de caractéristiques.
+
+* Le nombre de filtres appliqués à la première couche de convolution est de 32 et est multiplié par 2 à chaque couche de convolution. Ceci permet de garder le même ratio entre le nombre de filtre et la taille des données (après un MaxPooling(2x2) la taille des données est divisée par 4) ce qui permet d'éviter de perdre trop d'information.
+
+* La partie finale du réseau est composée de deux couches denses (1024 et 512 neurones) avec Dropout(0.3), puis d’une couche de sortie Softmax à 10 neurones, correspondant aux 10 classes du CIFAR-10.
+
+* Ce type d’architecture permet généralement d’atteindre une précision de 81 % sur le jeu de test CIFAR-10 et possèdent 2 916 394 paramètres. Cela lui donne un espace ROM de 2M39 > 1M99 ce qui ne le rend aps embarquable sur cette carte
+
 ## Modèle light 233k_80
 
 ### Description du modèle
