@@ -2,123 +2,247 @@
 
 ## 1. Analyse du modèle existant (Model0)
 
-* Le modèle étudié est une version simplifiée du VGG11, adaptée au jeu de données CIFAR-10. Il s’agit d’un réseau convolutionnel profond (CNN) construit de manière séquentielle, comprenant trois blocs convolutionnels suivis de couches entièrement connectées.
+Le modèle étudié est une version simplifiée du **VGG11**, adaptée au jeu de données **CIFAR-10**.
+Il s’agit d’un **réseau de neurones convolutionnel profond (CNN)** construit de manière séquentielle, comprenant trois blocs convolutionnels suivis de couches entièrement connectées.
 
-* Chaque bloc comporte :
+### Structure du modèle
 
-	- une couches Conv2D (3×3)
-	- une fonction d'activations ReLU,
-	- une couche de Batch Normalization pour stabiliser l’apprentissage,
-	- une couches Conv2D (3×3),
-	- une fonction d'activations ReLU,
-	- une couche de Batch Normalization pour stabiliser l’apprentissage,
-	- une application d'un Dropout
-	- un MaxPooling(2×2) pour diminuer la taille des cartes de caractéristiques.
+Chaque bloc convolutionnel comporte :
 
-* Le nombre de filtres appliqués à la première couche de convolution est de 32 et est multiplié par 2 à chaque couche de convolution. Ceci permet de garder le même ratio entre le nombre de filtre et la taille des données (après un MaxPooling(2x2) la taille des données est divisée par 4) ce qui permet d'éviter de perdre trop d'information.
+* une couche **Conv2D (3×3)**,
+* une fonction d’activation **ReLU**,
+* une **Batch Normalization** pour stabiliser l’apprentissage,
+* une seconde couche **Conv2D (3×3)**,
+* une fonction d’activation **ReLU**,
+* une **Batch Normalization**,
+* un **Dropout** pour régulariser,
+* un **MaxPooling(2×2)** pour réduire la taille des cartes de caractéristiques.
 
-* La partie finale du réseau est composée de deux couches denses (1024 et 512 neurones) avec Dropout(0.3), puis d’une couche de sortie Softmax à 10 neurones, correspondant aux 10 classes du CIFAR-10.
+Le nombre de filtres appliqués à la première couche de convolution est de 32 et est **multiplié par 2 à chaque bloc**.
+Cela permet de conserver un bon ratio entre le nombre de filtres et la taille des données (chaque MaxPooling(2×2) divisant la taille par 4), limitant ainsi la perte d’information.
 
-* Ce type d’architecture permet généralement d’atteindre une précision de 81 % sur le jeu de test CIFAR-10 et possèdent 2 916 394 paramètres. Cela lui donne un espace ROM de 2M39 > 1M99 ce qui ne le rend aps embarquable sur cette carte
+La partie finale du réseau comprend :
 
-## Modèle light 233k_80
+* deux couches denses (1024 et 512 neurones) avec **Dropout(0.3)**,
+* une couche de sortie **Softmax** à 10 neurones (correspondant aux classes de CIFAR-10).
 
-### Description du modèle
-
-Ce modèle possède les caractéristiques suivantes **sans compression** :
-
-* Taille en flash : 268 Ko
-* Taille en RAM : 85,7 Ko
-* Environ 8,5 M d'opérations pour aboutir à un résultat
-* Précision (accuracy) : 80 % (**À RETESTER AVEC LA CARTE**)
-
-> (Parler de comment les modèles se font compresser — par exemple : compression des couches de convolution mais pas forcément des couches denses...)
-
-### Caractéristiques après compression (compression élevée)
-
-* Taille en flash : 235 Ko
-* Taille en RAM : 85,7 Ko
-* Environ 8,5 M d'opérations pour aboutir à un résultat
-* Précision (accuracy) : 80 % (**À RETESTER AVEC LA CARTE**)
-
-Nous avons choisi de poursuivre l'étude de ce modèle comme solution pour le projet. En effet, ce modèle, au vu de ses faibles besoins en mémoire (flash et RAM) et de sa précision satisfaisante, constitue un bon candidat pour notre méthode d'approche par **Ensemble Learning**. (**A évoquer avant : tableau, loi binomiale, résistances aux attaques, etc.**)
-
-La faible place que prend le modèle en flash et en RAM — compressé ou non — nous permet de l'implanter sur des cartes ayant des caractéristiques nettement inférieures à celles de la carte d'origine. Nous pouvons donc envisager d'utiliser des cartes moins chères, mais en plus grand nombre, pour permettre un ensemble learning donnant des résultats corrects tout en gardant un coût matériel inférieur au modèle d'origine.
-
-En compression élevée, le modèle peut tenir sur une carte possédant moins de 256 Ko de flash et un peu plus de 100 Ko de RAM, ce qui laisse de la place pour faire tourner d'autres programmes que l'IA embarquée. Nous pouvons également choisir des cartes plus puissantes pour exécuter des programmes annexes plus lourds. Il reste possible d'implémenter plusieurs IA sur une même carte si l'espace mémoire le permet, bien que cela augmente le temps d'inférence.
-
-Dans le cadre d'un ensemble learning avec ce modèle, nous proposons trois cartes en fonction du domaine d'application du projet.
+Ce type d’architecture atteint généralement **81 % de précision** sur le jeu de test CIFAR-10 et possède **2 916 394 paramètres**.
+Cela correspond à un besoin mémoire d’environ **2 Mo 39**, supérieur à la limite de **1 Mo 99**, ce qui **ne le rend pas embarquable** sur notre carte actuelle.
 
 ---
 
-## Cartes proposées
+## 2. Ensemble Learning
 
-### NUCLEO-G0B1RE
+Une de nos idées pour réduire les coûts, augmenter la précision du système et améliorer la robustesse face aux attaques consiste à utiliser une approche **d’Ensemble Learning**.
 
-**Caractéristiques** :
+### Principe
 
-* Flash : 256 Ko
-* RAM : 144 Ko
-* Cœur : ARM Cortex-M0+, 64 MHz
-* Prix : < 18 €
+L’Ensemble Learning consiste à faire travailler **plusieurs modèles en parallèle** sur un même input (ici une image de CIFAR-10).
+Chaque modèle produit sa propre prédiction, puis un **système de décision** fusionne ces résultats pour produire la classification finale.
 
-Cette carte contient juste assez de flash pour implémenter l'IA et lui permettre d'utiliser un UART pour communiquer ses résultats. Cependant, elle coûte environ **5,3 fois moins cher** que la carte d'origine, ce qui permet d'imaginer déployer 5 modèles en ensemble learning. Cela donnerait une précision théorique (avec décision par majorité absolue) d'environ **94,5 %** (à confirmer). De plus, la carte possède un mode basse consommation.
+Nous envisageons un système composé de **plusieurs petites IA embarquées sur des cartes distinctes**, chacune transmettant son résultat à une carte centrale responsable de la décision finale.
 
-Inconvénients : le CPU est ancien (ARM Cortex-M0+ de 2012) et la fréquence relativement basse (64 MHz) implique un temps d'inférence théorique de **132 ms**, relativement lent comparé à d'autres cartes.
+> **Schéma à insérer ici**
 
----
+Nous avons choisi un **vote à majorité absolue** :
+l’image est classée dans le label le plus fréquemment proposé.
+En cas d’égalité (peu probable si le nombre de modèles est impair), un tirage aléatoire ou une nouvelle analyse peut être effectué.
 
-### NUCLEO-F446RE
+Les modèles embarqués seront **similaires**, avec de légères variations (poids initiaux, paramètres d’entraînement ou architecture).
 
-**Caractéristiques** :
+### Objectif
 
-* Flash : 512 Ko
-* RAM : 128 Ko
-* Cœur : Cortex-M4, 180 MHz
-* Prix : < 20 €
+L’objectif est de déterminer **combien de modèles** d’une certaine précision individuelle sont nécessaires pour atteindre une **accuracy globale satisfaisante**, tout en **minimisant le coût matériel**.
 
-Cette carte possède suffisamment de RAM et de flash pour installer notre modèle et d'autres programmes. Comme pour la carte précédente, elle permettrait d'atteindre une précision théorique d'environ **94,5 %** en ensemble learning. Elle coûte seulement quelques euros de plus que la carte initiale.
+La probabilité que la majorité des modèles aient raison correspond à :
 
-Avantages : fréquence d'horloge élevée, inférence théorique rapide (**66 ms**). Inconvénient : l'architecture CPU n'est pas la plus moderne et nous n'avons pas trouvé d'indication claire d'un mode low-power.
+[
+P(X > n/2), \text{ avec } X \sim \text{Binom}(n, p)
+]
 
----
+où :
 
-### NUCLEO-L452RE
+* *n* = nombre de modèles,
+* *p* = précision individuelle du modèle,
+* *X* = nombre de modèles donnant la bonne prédiction.
 
-**Caractéristiques** :
 
-* Flash : 512 Ko
-* RAM : 160 Ko
-* Cœur : Cortex-M4, 80 MHz
-* Prix indicatif : ~15 €
+<p align="center">
+  <img src="Loi%20binomiale.png" alt="Probabilité pour la Loi Binomiale" width="500">
+</p>
 
-Cette carte offre une capacité de flash similaire à la NUCLEO-F446RE et un peu plus de RAM. Son prix attractif en fait une bonne option. Elle permettrait, comme les autres, d'embarquer 5 modèles pour un ensemble learning atteignant théoriquement **94,5 %** de précision.
-
-Avantages : mode low-power disponible. Inconvénients : CPU un peu daté et fréquence modérée conduisant à un temps d'inférence théorique d'environ **106 ms**.
+Le graphique montre qu’il est préférable d’utiliser un **nombre impair de modèles** pour éviter les égalités.
+Des modèles avec une précision individuelle de **plus de 75 %** permettent d’atteindre une précision globale **supérieure à 90 %** dès **4 modèles**.
 
 ---
 
-## Sécurité
+## 3. Modèle 19
 
-Le modèle présente l'avantage d'être embarquable sur plusieurs cartes à faible coût, ce qui permettrait d'augmenter la robustesse et la sécurité de l'ensemble learning si le déploiement est bien réfléchi. (**À DÉVELOPPER**)
+### Caractéristiques sans compression
 
-Nous avons néanmoins testé certaines attaques sur le modèle.
+* **Flash** : 268 Ko
+* **RAM** : 85,7 Ko
+* **Opérations** : ~8,5 M
+* **Précision** : 80 % (**à revalider sur carte**)
 
-### Adversarial
+### Caractéristiques avec compression élevée
 
-    L'attaque par adversarial consiste bruité une image de maniére a trompé le model. Pour ce faire on peut (dans le cas "boite blanche") 
-> Il est recommandé d'embarquer des modèles légèrement différents ou entraînés différemment pour réduire l'impact de ce type d'attaque sur un ensemble learning.
+* **Flash** : 235 Ko
+* **RAM** : 85,7 Ko
+* **Opérations** : ~8,5 M
+* **Précision** : 80 % (**à revalider sur carte**)
 
-### Bit flip
+Ce modèle, de par sa **faible empreinte mémoire** et sa précision satisfaisante, est un **bon candidat pour l’approche Ensemble Learning**.
 
-> Le défaut de notre protocole d'évaluation actuel est que nous n'attaquons qu'un modèle à la fois ; nous ne pouvons donc pas tester pleinement la résistance de l'ensemble à une attaque laser.
+Sa taille réduite permet son déploiement sur des **cartes à bas coût**, tout en laissant de la mémoire disponible pour d’autres fonctions.
+Plusieurs IA peuvent éventuellement être implantées sur une même carte, au prix d’un temps d’inférence plus élevé.
+
+---
+
+## 4. Cartes proposées
+
+### a) NUCLEO-G0B1RE
+
+* **Flash** : 256 Ko
+* **RAM** : 144 Ko
+* **Cœur** : ARM Cortex-M0+, 64 MHz
+* **Prix** : < 18 €
+
+Assez de mémoire pour embarquer le modèle et communiquer via UART.
+Son coût environ **5,3 fois inférieur** à la carte d’origine permettrait d’utiliser **5 modèles en ensemble learning**, pour une précision théorique d’environ **94,5 %**.
+Mode basse consommation disponible.
+
+**Inconvénients** : CPU ancien et fréquence limitée (64 MHz), donnant un **temps d’inférence estimé à 132 ms**.
+
+---
+
+### b) NUCLEO-F446RE
+
+* **Flash** : 512 Ko
+* **RAM** : 128 Ko
+* **Cœur** : ARM Cortex-M4, 180 MHz
+* **Prix** : < 20 €
+
+Carte plus rapide tout en restant abordable.
+Précision théorique similaire : **94,5 %** en ensemble learning.
+**Avantages** : inférence rapide (~66 ms).
+**Inconvénient** : absence de mode basse consommation documenté.
+
+---
+
+### c) NUCLEO-L452RE
+
+* **Flash** : 512 Ko
+* **RAM** : 160 Ko
+* **Cœur** : ARM Cortex-M4, 80 MHz
+* **Prix indicatif** : ~15 €
+
+Bon rapport performance/prix.
+Permet d’embarquer plusieurs modèles pour atteindre **94,5 %** de précision.
+**Avantages** : présence d’un mode basse consommation.
+**Inconvénients** : fréquence modérée, **temps d’inférence ≈ 106 ms**.
+
+---
+
+## 5. Sécurité
+
+L’utilisation de plusieurs modèles à faible coût renforce la **résilience globale du système**.
+Cependant, chaque modèle reste individuellement vulnérable, d’où la nécessité d’étudier leur robustesse face à différentes attaques.
+
+### a) Attaques adversariales
+
+Une **attaque adversariale** consiste à **ajouter un bruit subtil** à une image pour provoquer une mauvaise classification.
+Nous avons testé deux types d’attaques : **FGSM** et **PGD** (en boîte blanche).
+
+**Masques obtenue pour un budget de 0,01 et un step de 0,001**
+<p align="center">
+  <img src="./Securite/Model19/adv_attack_mask_exemple_001_step0001.png" alt="GProbabilité pour la Loi Binomiale" width="500">
+</p>
+
+<p align="center">
+  <img src="./Securite/Model19/analyse_courbe_adv.png" alt="GProbabilité pour la Loi Binomiale" width="500">
+</p>
+
+Les tests montrent que :
+
+* l’attaque **PGD** est plus efficace que **FGSM** à budget égal ;
+* la perturbation visuelle reste à peine perceptible pour l’humain ;
+* la précision chute de **90 % à environ 35 %**.
+
+Ainsi, le modèle n’est **pas robuste** à ces attaques.
+De plus, la similarité entre modèles rend l’ensemble learning **également vulnérable**, car une même perturbation affectera plusieurs modèles.
+
+#### Protection
+
+Nous avons ensuite testé une **adversarial training**, en introduisant des images bruitées dans les batches d’entraînement.
+Cette méthode rallonge le temps d’entraînement, mais améliore la résistance du modèle.
+
+> (**Résultats à développer et illustrer**)
+
+---
+
+### b) Bit Flip
+
+Le protocole actuel n’attaque qu’un seul modèle à la fois ; nous ne pouvons donc pas encore évaluer la résistance de **l’ensemble complet** à une attaque physique (type laser).
+
+---
+
+## 6. Conclusion (provisoire)
+
+Le **modèle light 233k_80** constitue un **excellent compromis** entre taille mémoire, coût et précision.
+Il est adapté à un **déploiement multi-carte** en ensemble learning, permettant d’améliorer la précision globale tout en réduisant les coûts.
+
+Des tests complémentaires sont nécessaires :
+
+* validation sur carte réelle,
+* diversification des entraînements pour réduire la corrélation des erreurs,
+* évaluation approfondie de la robustesse (bruit, laser, bit flip, etc.).
+
+---
+
+## 7. Modèle 5 compressé
+
+### Caractéristiques (compression élevée)
+
+* **Flash** : 1,25 Mo
+* **RAM** : 147,87 Ko
+* **Opérations** : ~39,3 M
+* **Précision** : 88 % (**à revalider sur carte**)
+
+Ce modèle présente une **excellente précision** et reste **intégrable sur la carte STM32L4R9** après compression, tout en laissant suffisamment de mémoire disponible pour d’autres fonctions.
+
+---
+
+### Carte NUCLEO-L4R9
+
+> Détails à compléter.
+
+---
+
+### Sécurité
+
+Comme pour le modèle précédent, nous avons testé la robustesse face à des attaques adversariales et appliqué des techniques de protection.
+
+#### Attaques adversariales
+
+> **Graphiques et masques à insérer ici**
+
+Le modèle reste sensible à ce type d’attaque : une petite perturbation (invisible à l’œil humain) peut réduire fortement l’accuracy.
+
+#### Protection
+
+> **Image avec masques à insérer**
+
+#### Bit Flip
+
+Même remarque : les tests actuels n’évaluent qu’un modèle isolé, pas l’ensemble.
 
 ---
 
 ## Conclusion (provisoire)
 
-Le modèle *light 233k_80* apparaît comme un bon compromis entre empreinte mémoire, coût et précision. Son faible besoin en flash permet d'envisager un déploiement multi-carte en ensemble learning pour améliorer la précision globale tout en maîtrisant le coût matériel. Il faut cependant poursuivre les tests sur carte (validation de l'accuracy), diversifier les entraînements pour réduire la corrélation des erreurs et approfondir l'analyse de robustesse face aux attaques (bruit, laser, etc.).
+Le **modèle 5 compressé** offre un bon compromis entre performance et compatibilité embarquée.
+Combiné à l’approche **Ensemble Learning**, il pourrait constituer une base robuste et scalable pour le projet.
 
 ---
 
-*Notes : remplacer les mentions entre parenthèses (MAJUSCULES) par des sections développées dans la version finale.*
