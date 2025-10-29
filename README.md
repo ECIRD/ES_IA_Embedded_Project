@@ -156,11 +156,11 @@ Nous avons testé deux types d’attaques : **FGSM** et **PGD** (en boîte blanc
 
 **Masques obtenue pour un budget de 0,01 et un step de 0,001**
 <p align="center">
-  <img src="./Securite/Model19/adv_attack_mask_exemple_001_step0001.png" alt="GProbabilité pour la Loi Binomiale" width="500">
+  <img src="./Securite/Model19/adv_attack_mask_exemple_001_step0001.png" alt="GProbabilité pour la Loi Binomiale" width="400">
 </p>
 
 <p align="center">
-  <img src="./Securite/Model19/analyse_courbe_adv.png" alt="GProbabilité pour la Loi Binomiale" width="500">
+  <img src="./Securite/Model19/analyse_courbe_adv.png" alt="GProbabilité pour la Loi Binomiale" width="700">
 </p>
 
 Les tests montrent que :
