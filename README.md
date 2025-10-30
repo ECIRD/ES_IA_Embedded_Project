@@ -42,7 +42,9 @@ Chaque modèle produit sa propre prédiction, puis un **système de décision** 
 
 Nous envisageons un système composé de **plusieurs petites IA embarquées sur des cartes distinctes**, chacune transmettant son résultat à une carte centrale responsable de la décision finale.
 
-> **Schéma à insérer ici**
+<p align="center">
+  <img src="Ensemble_learning_schema.png" alt="Probabilité pour la Loi Binomiale" width="300">
+</p>
 
 Nous avons choisi un **vote à majorité absolue** :
 l’image est classée dans le label le plus fréquemment proposé.
@@ -156,6 +158,11 @@ Nous avons testé deux types d’attaques : **FGSM** et **PGD** (en boîte blanc
 **Masques obtenue pour un budget de 0,01 et un step de 0,001**
 <p align="center">
   <img src="./Securite/Model19/adv_attack_mask_exemple_001_step0001.png" alt="GProbabilité pour la Loi Binomiale" width="400">
+</p>
+
+**Masques obtenue pour un budget de 0,05 et un step de 0,005**
+<p align="center">
+  <img src="./Securite/Model19/adv_attack_mask_exemple_005_step0005.png" alt="GProbabilité pour la Loi Binomiale" width="400">
 </p>
 
 <p align="center">
