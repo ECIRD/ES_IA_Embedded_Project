@@ -1,0 +1,181 @@
+save path : ./save/resnet9_quan/nominal_0.01/results/3666
+{'data_path': './dataset', 'arch': 'resnet9_quan', 'dataset': 'cifar10', 'epochs': 40, 'start_epoch': 0, 'attack_sample_size': 100, 'test_batch_size': 100, 'optimizer': 'SGD', 'schedule': [25, 40], 'gammas': [0.1, 0.1], 'workers': 4, 'ngpu': 1, 'gpu_id': 0, 'print_freq': 100, 'decay': 0.0003, 'momentum': 0.9, 'limit_layer': -1, 'randbet_coeff': 10, 'k_top': 100, 'randbet': False, 'clipping_coeff': 0.0, 'learning_rate': 0.01, 'manualSeed': 3666, 'save_path': './save/resnet9_quan/nominal_0.01/results/3666', 'enable_bfa': True, 'resume': './save/resnet9_quan/nominal_0.01/model_best.pth.tar', 'quan_bitwidth': None, 'reset_weight': True, 'evaluate': True, 'n_iter': 30, 'fine_tune': True, 'model_only': False, 'random_bfa': False, 'use_cuda': True}
+Random Seed: 3666
+python version : 3.12.12 | packaged by Anaconda, Inc. | (main, Oct 14 2025, 16:10:16) [MSC v.1929 64 bit (AMD64)]
+torch  version : 2.6.0+cu124
+cudnn  version : 90100
+=> creating model 'resnet9_quan'
+=> network :
+ Sequential(
+  (0): Sequential(
+    (0): quan_Conv2d(3, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace=True)
+  )
+  (1): Residual(
+    (module): Sequential(
+      (0): Sequential(
+        (0): quan_Conv2d(8, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (1): Sequential(
+        (0): quan_Conv2d(8, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (2): Sequential(
+        (0): quan_Conv2d(8, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+    )
+  )
+  (2): Residual(
+    (module): Sequential(
+      (0): Sequential(
+        (0): quan_Conv2d(8, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (1): Sequential(
+        (0): quan_Conv2d(8, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (2): Sequential(
+        (0): quan_Conv2d(8, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+    )
+  )
+  (3): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (4): Dropout2d(p=0.2, inplace=False)
+  (5): Residual(
+    (module): Sequential(
+      (0): Sequential(
+        (0): quan_Conv2d(8, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (1): Sequential(
+        (0): quan_Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (2): Sequential(
+        (0): quan_Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+    )
+    (skip): Conv2d(8, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+  )
+  (6): Residual(
+    (module): Sequential(
+      (0): Sequential(
+        (0): quan_Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (1): Sequential(
+        (0): quan_Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (2): Sequential(
+        (0): quan_Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+    )
+  )
+  (7): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (8): Dropout2d(p=0.3, inplace=False)
+  (9): Sequential(
+    (0): quan_Conv2d(16, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace=True)
+  )
+  (10): Sequential(
+    (0): quan_Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace=True)
+  )
+  (11): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  (12): Dropout2d(p=0.3, inplace=False)
+  (13): Sequential(
+    (0): quan_Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace=True)
+  )
+  (14): AdaptiveAvgPool2d(output_size=(1, 1))
+  (15): Flatten()
+  (16): quan_Linear(in_features=64, out_features=128, bias=False)
+  (17): ReLU(inplace=True)
+  (18): Dropout(p=0.35, inplace=False)
+  (19): quan_Linear(in_features=128, out_features=10, bias=False)
+  (20): Softmax(dim=1)
+)
+=> loading checkpoint './save/resnet9_quan/nominal_0.01/model_best.pth.tar'
+=> loaded checkpoint './save/resnet9_quan/nominal_0.01/model_best.pth.tar' (epoch 0)
+  **Test** Prec@1 51.140 Prec@5 89.640 Error@1 48.860
+k_top=100
+Attack_sample=100
+************** ATTACK iteration *****************
+Iteration: [001/030]   Attack Time 6.902 (6.902)  [2025-10-29 11:36:58]
+loss before attack: 1.6288
+loss after attack: 1.8585
+bit flips: 1
+hamming_dist: 1
+  **Test** Prec@1 51.390 Prec@5 90.090 Error@1 48.610
+iteration Time 65.260 (65.260)
+************** ATTACK iteration *****************
+Iteration: [002/030]   Attack Time 6.804 (6.853)  [2025-10-29 11:38:11]
+loss before attack: 1.8585
+loss after attack: 1.9847
+bit flips: 2
+hamming_dist: 2
+  **Test** Prec@1 44.230 Prec@5 85.530 Error@1 55.770
+iteration Time 44.485 (54.872)
+************** ATTACK iteration *****************
+Iteration: [003/030]   Attack Time 1.155 (4.954)  [2025-10-29 11:38:56]
+loss before attack: 1.9847
+loss after attack: 2.1603
+bit flips: 3
+hamming_dist: 3
+  **Test** Prec@1 33.620 Prec@5 75.980 Error@1 66.380
+iteration Time 29.873 (46.539)
+************** ATTACK iteration *****************
+Iteration: [004/030]   Attack Time 0.353 (3.804)  [2025-10-29 11:39:26]
+loss before attack: 2.1603
+loss after attack: 2.2840
+bit flips: 4
+hamming_dist: 4
+  **Test** Prec@1 26.550 Prec@5 65.740 Error@1 73.450
+iteration Time 23.047 (40.666)
+************** ATTACK iteration *****************
+Iteration: [005/030]   Attack Time 0.345 (3.112)  [2025-10-29 11:39:50]
+loss before attack: 2.2840
+loss after attack: 2.3730
+bit flips: 5
+hamming_dist: 5
+  **Test** Prec@1 17.100 Prec@5 55.970 Error@1 82.900
+iteration Time 21.599 (36.853)
+************** ATTACK iteration *****************
+Iteration: [006/030]   Attack Time 0.329 (2.648)  [2025-10-29 11:40:12]
+loss before attack: 2.3730
+loss after attack: 2.4044
+bit flips: 6
+hamming_dist: 6
+  **Test** Prec@1 13.020 Prec@5 51.670 Error@1 86.980
+iteration Time 20.920 (34.197)
+************** ATTACK iteration *****************
+Iteration: [007/030]   Attack Time 0.320 (2.315)  [2025-10-29 11:40:33]
+loss before attack: 2.4044
+loss after attack: 2.4177
+bit flips: 7
+hamming_dist: 7
+  **Test** Prec@1 10.850 Prec@5 50.970 Error@1 89.150
+iteration Time 21.609 (32.399)
