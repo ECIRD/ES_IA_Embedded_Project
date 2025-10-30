@@ -56,9 +56,8 @@ L’objectif est de déterminer **combien de modèles** d’une certaine précis
 
 La probabilité que la majorité des modèles aient raison correspond à :
 
-[
-P(X > n/2), \text{ avec } X \sim \text{Binom}(n, p)
-]
+$P(X > n/2), \text{ avec } X \sim \text{Binom}(n, p)$
+
 
 où :
 
