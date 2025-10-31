@@ -345,37 +345,37 @@ Dans cette configuration, la précision théorique pourrait atteindre **jusqu’
 
 ## 11. Sécurité (pour 1 modele)
 
-Comme pour le modèle précédent, nous avons testé la robustesse face à des attaques adversariales et appliqué des techniques de protection.
+Comme pour les modèles précédent, nous avons testé la robustesse face à des attaques adversariales et appliqué des techniques de protection.
 
 ### a) Attaques adversariales
 
-**Masques obtenue pour un budget de 0,01 et un step de 0,001**
+**Masques obtenue pour un budget de 0,05 et un step de 0,005**
 <p align="center">
-  <img src="./Securite/Model5/adv_attack_mask_exemple_001_step0001.png" alt="GProbabilité pour la Loi Binomiale" width="400">
+  <img src="./Securite/Model2/mask_005_step_0005.png" alt="GProbabilité pour la Loi Binomiale" width="400">
 </p>
 
 <p align="center">
-  <img src="./Securite/Model5/analyse_courbe_adv.png" alt="GProbabilité pour la Loi Binomiale" width="700">
+  <img src="./Securite/Model2/analyse_courbes_adv.png" alt="GProbabilité pour la Loi Binomiale" width="700">
 </p>
-Les conclusions sur la vulnérabilité du Model 5 par rapport aux attaques adversarial restent les mêmes que pour celles du Model 19.\
-Le modèle reste très sensible à ce type d’attaque : une petite perturbation (invisible à l’œil humain) peut réduire fortement la précision du modèle.
+Les conclusions sur la vulnérabilité du Model 2 par rapport aux attaques adversaires restent les mêmes que pour celles du Model 19, au détail près que le modèle semble plus vulnérable aux attaques FGSM que les autres.
+De plus, si le modèle est implémenté en ensemble learning, alors les perturbations peuvent affecter tous les modèles implémentés de manière similaire, le rendant donc encore plus vulnérable à ce type d'attaque.
 
 ### Protection
 
 Nous avons ensuite proteger notre model de la meme maniére que le modele 19.
 
 <p align="center">
-  <img src="./Securite/Model5/protected_adv_attack_mask_exemple_01_step005.png" alt="GProbabilité pour la Loi Binomiale" width="700">
+  <img src="./Securite/Model2/mask_protected.png" alt="GProbabilité pour la Loi Binomiale" width="700">
 </p>
 
 Voici un détail de la pression du modèle protégé face au modèle sans protection pour un budget de 0,1 et un step de 0,05:
 
 | Modèle        | Test acc. (clean) [%] | Test acc. (FGM) [%] | Test acc. (PGD) [%] |
 |----------------|-----------------------|----------------------|----------------------|
-| **Non protégé** | 88.29                | 22.62                | 7.88                 |
-| **Protégé**     | 68.37                | 47.00                | 39.71                |
+| **Non protégé** | 82.02                | 8.95               | 10.05                 |
+| **Protégé**     | 57.29                | 40.10               | 35.53                |
 
-On constate que le masque appliqué sur l'image se voit bien plus que celui sur le modèle 19. Cependant, le modèle reste sensible aux attaques mais garde une précision jugée correcte, que ce soit en subissant une attaque ou non.
+On constate que le masque appliqué sur l'image se voit bien plus que celui sur le modèle 19. Cependant, le modèle reste sensible aux attaques mais garde une précision jugée correcte sans attaques (proche du modèle 5) et la protection appliquée permet au modèle de garder une précision "correcte" en cas d'attaque.
 
 ### b) Bit Flip
 
