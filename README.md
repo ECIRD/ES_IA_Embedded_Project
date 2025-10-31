@@ -1,5 +1,9 @@
 # ES_IA_Embedded_Project
 
+## Auteurs
+- Hugo CELARIE
+- Téano DESHAIES
+
 ## Arborescence et description des fichiers
 
 ### Codes
@@ -19,6 +23,24 @@ Contient de nombreux rapports d'analyse des modèles générés (rapports produi
 
 ### Sécurité
 Contient les résultats des tests d'attaque sur les modèles retenus (bit-flip et attaques adversariales).
+
+## Introduction
+
+Ce document présente une analyse complète des **modèles d’intelligence artificielle** développés pour la **reconnaissance d’images CIFAR-10**, ainsi que leur **optimisation**, leur **implémentation embarquée** et leur **évaluation en matière de sécurité**.  
+
+L’objectif de ce projet est de **proposer un ou plusieurs modèles adaptés à des plateformes STM32**, en conciliant **précision**, **consommation mémoire** et **temps d’inférence**, tout en garantissant une **robustesse face aux attaques**.  
+
+Ce README détaille donc les différentes étapes du travail réalisé :
+- la **conception et l’analyse** des modèles,
+- le **processus de compression et d’optimisation** pour l’embarqué,
+- la **mise en œuvre sur carte STM32**,
+- et enfin, les **tests de sécurité** (attaques adversariales, bit-flip, etc.) permettant d’évaluer la résilience des solutions proposées.
+
+Ce rapport analysera principalement **trois modèles**, selon la méthodologie suivante :  
+- **Analyse détaillée des modèles** : étude de leurs architectures, performances et contraintes.  
+- **Proposition de cartes d’embarquement** et description des **méthodes d’intégration** adaptées.  
+- **Évaluation des techniques de sécurisation** et de la **résistance des modèles** face aux attaques, notamment les **Bit Flip Attacks** et les **Adversarial Attacks**.
+
 
 
 ## 1. Analyse du modèle existant (Model0)
