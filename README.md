@@ -1,5 +1,26 @@
 # ES_IA_Embedded_Project
 
+## Arborescence et description des fichiers
+
+### Codes
+Contient les programmes utilisés pour implémenter les modèles sur cartes et les tester :
+
+- `Communication_NN.py` : script Python permettant de tester un modèle implémenté sur la carte.  
+- `Projet_CUBE.zip` : projet STM32CubeIDE utilisé pour déployer les modèles sur la carte **NUCLEO-L4R9IDISCOVERY**.
+
+### Historique des modèles
+Répertoire stockant l'ensemble des modèles réalisés (`.h5`), leurs rapports d'analyse (`.txt`) ainsi que l'historique détaillé avec leurs caractéristiques (`Création_du_modèle.txt`). Contient également un **Jupyter Notebook** ayant servi à préparer les différents modèles.
+
+### Modèles retenus
+Contient les modèles qui ont été retenus suite aux tests. Ces modèles sont ceux traités dans le rapport ; leur nomenclature (`Modele_N`) n'est pas corrélée à l'historique des modèles.
+
+### Rapport_analyses
+Contient de nombreux rapports d'analyse des modèles générés (rapports produits par STM32CubeIDE).
+
+### Sécurité
+Contient les résultats des tests d'attaque sur les modèles retenus (bit-flip et attaques adversariales).
+
+
 ## 1. Analyse du modèle existant (Model0)
 
 Le modèle étudié est une version simplifiée du **VGG11**, adaptée au jeu de données **CIFAR-10**.
@@ -84,14 +105,14 @@ Des modèles avec une précision individuelle de **plus de 75 %** permettent d�
 * **Flash** : 268 Ko
 * **RAM** : 85,7 Ko
 * **Opérations** : ~8,5 M
-* **Précision** : 80 % (**à revalider sur carte**)
+* **Précision** : 82 %
 
 ### Caractéristiques avec compression élevée
 
 * **Flash** : 235 Ko
 * **RAM** : 85,7 Ko
 * **Opérations** : ~8,5 M
-* **Précision** : 80 % (**à revalider sur carte**)
+* **Précision** : 83 %
 
 Ce modèle, de par sa **faible empreinte mémoire** et sa précision satisfaisante, est un **bon candidat pour l’approche Ensemble Learning**.
 
@@ -109,8 +130,8 @@ Plusieurs IA peuvent éventuellement être implantées sur une même carte, au p
 * **Cœur** : ARM Cortex-M0+, 64 MHz
 * **Prix** : < 18 €
 
-Assez de mémoire pour embarquer le modèle et communiquer via UART.
-Son coût environ **5,3 fois inférieur** à la carte d’origine permettrait d’utiliser **5 modèles en ensemble learning**, pour une précision théorique d’environ **94,5 %**.
+Assez de mémoire pour embarquer le modèle et communiquer via UART.\
+Son coût environ **5,3 fois inférieur** à la carte d’origine permettrait d’utiliser **5 modèles en ensemble learning**, pour une précision théorique d’environ **94,5 %**.\
 Mode basse consommation disponible.
 
 **Inconvénients** : CPU ancien et fréquence limitée (64 MHz), donnant un **temps d’inférence estimé à 132 ms**.
@@ -125,8 +146,8 @@ Mode basse consommation disponible.
 * **Prix** : < 20 €
 
 Carte plus rapide tout en restant abordable.
-Précision théorique similaire : **94,5 %** en ensemble learning.
-**Avantages** : inférence rapide (~66 ms).
+Précision théorique similaire : **94,5 %** en ensemble learning.\
+**Avantages** : inférence rapide (~66 ms).\
 **Inconvénient** : absence de mode basse consommation documenté.
 
 ---
@@ -138,21 +159,21 @@ Précision théorique similaire : **94,5 %** en ensemble learning.
 * **Cœur** : ARM Cortex-M4, 80 MHz
 * **Prix indicatif** : ~15 €
 
-Bon rapport performance/prix.
-Permet d’embarquer plusieurs modèles pour atteindre **94,5 %** de précision.
-**Avantages** : présence d’un mode basse consommation.
+Bon rapport performance/prix.\
+Permet d’embarquer plusieurs modèles pour atteindre **94,5 %** de précision.\
+**Avantages** : présence d’un mode basse consommation.\
 **Inconvénients** : fréquence modérée, **temps d’inférence ≈ 106 ms**.
 
 ---
 
-## 5. Sécurité
+## 5. Sécurité (pour 1 modele)
 
-L’utilisation de plusieurs modèles à faible coût renforce la **résilience globale du système**.
+L’utilisation de plusieurs modèles à faible coût renforce la **résilience globale du système**.\
 Cependant, chaque modèle reste individuellement vulnérable, d’où la nécessité d’étudier leur robustesse face à différentes attaques.
 
 ### a) Attaques adversariales
 
-Une **attaque adversariale** consiste à **ajouter un bruit subtil** à une image pour provoquer une mauvaise classification.
+Une **attaque adversariale** consiste à **ajouter un bruit subtil** à une image pour provoquer une mauvaise classification.\
 Nous avons testé deux types d’attaques : **FGSM** et **PGD** (en boîte blanche).
 
 **Masques obtenue pour un budget de 0,01 et un step de 0,001**
@@ -175,27 +196,39 @@ Les tests montrent que :
 * la perturbation visuelle reste à peine perceptible pour l’humain ;
 * la précision chute de **90 % à environ 35 %**.
 
-Ainsi, le modèle n’est **pas robuste** à ces attaques.
+Ainsi, le modèle n’est **pas robuste** à ces attaques.\
 De plus, la similarité entre modèles rend l’ensemble learning **également vulnérable**, car une même perturbation affectera plusieurs modèles.
 
-#### Protection
+### Protection
 
-Nous avons ensuite testé une **adversarial training**, en introduisant des images bruitées dans les batches d’entraînement.
+Nous avons ensuite testé une **adversarial training**, en introduisant des images bruitées dans les batches d’entraînement.\
 Cette méthode rallonge le temps d’entraînement, mais améliore la résistance du modèle.
 
-> (**Résultats à développer et illustrer**)
+<p align="center">
+  <img src="./Securite/Model19/protected_adv_attack_mask_exemple_01_step005.png" alt="GProbabilité pour la Loi Binomiale" width="700">
+</p>
+
+On constate qu'avec un modèle entraîné, le masque qui doit être appliqué pour perturber la classification est plus visible sur l'image.
+
+Voici un détail de la pression du modèle protégé face au modèle sans protection pour un budget de 0,1 et un step de 0,05:
+
+| Modèle        | Test acc. (clean) [%] | Test acc. (FGM) [%] | Test acc. (PGD) [%] |
+|----------------|-----------------------|----------------------|----------------------|
+| **Non protégé** | 79.90                | 15.03                | 6.91                 |
+| **Protégé**     | 54.27                | 40.87                | 36.81                |
+
+Cette protection a permis au modèle d'augmenter significativement sa précision en cas d'attaque, pour une attaque demandant un grand budget. Mais la protection fait fortement diminuer la précision du modèle si aucune attaque n'est menée.
 
 ---
 
 ### b) Bit Flip
 
-Le protocole actuel n’attaque qu’un seul modèle à la fois ; nous ne pouvons donc pas encore évaluer la résistance de **l’ensemble complet** à une attaque physique (type laser).
 
 ---
 
 ## 6. Conclusion (provisoire)
 
-Le **modèle light 233k_80** constitue un **excellent compromis** entre taille mémoire, coût et précision.
+Le **modèle light 233k_80** constitue un **excellent compromis** entre taille mémoire, coût et précision.\
 Il est adapté à un **déploiement multi-carte** en ensemble learning, permettant d’améliorer la précision globale tout en réduisant les coûts.
 
 Des tests complémentaires sont nécessaires :
@@ -211,44 +244,147 @@ Des tests complémentaires sont nécessaires :
 ### Caractéristiques (compression élevée)
 
 * **Flash** : 1,25 Mo
-* **RAM** : 147,87 Ko
+* **RAM** : 147,87 ko
 * **Opérations** : ~39,3 M
-* **Précision** : 88 % (**à revalider sur carte**)
+* **Précision** : 90 %
 
 Ce modèle présente une **excellente précision** et reste **intégrable sur la carte STM32L4R9** après compression, tout en laissant suffisamment de mémoire disponible pour d’autres fonctions.
 
----
-
-### Carte NUCLEO-L4R9
-
-> Détails à compléter.
+Au vu de la taille du modèle et des coûts en mémoire RAM et du nombre d'opérations demandé. Peu de cartes peuvent permettre une embarcation à un coût équivalent ou inférieur à la carte initialement proposée.
 
 ---
 
-### Sécurité
+### Carte NUCLEO-L4R9IDISCOVERY
+
+* **Flash** : 2 Mo
+* **RAM** : 640 Ko
+* **Cœur** : ARM Cortex-M4, 120 MHz
+* **Prix indicatif** : ~30 €
+
+Cette carte haut de gamme de la série L4, adaptée aux applications **IA embarquée** permet d’embarquer des modèles complexes tout en conservant une consommation énergétique maîtrisée.\
+**Avantages** : grande mémoire, fréquence élevée (**temps d'inférence = 327ms**), nombreux périphériques intégrés (accéléromètre, gyroscope, écran LCD).\
+**Inconvénients** : coût élevé, carte volumineuse.
+
+---
+
+## 8. Sécurité
 
 Comme pour le modèle précédent, nous avons testé la robustesse face à des attaques adversariales et appliqué des techniques de protection.
 
-#### Attaques adversariales
+### a) Attaques adversariales
 
-> **Graphiques et masques à insérer ici**
+**Masques obtenue pour un budget de 0,01 et un step de 0,001**
+<p align="center">
+  <img src="./Securite/Model5/adv_attack_mask_exemple_001_step0001.png" alt="GProbabilité pour la Loi Binomiale" width="400">
+</p>
 
-Le modèle reste sensible à ce type d’attaque : une petite perturbation (invisible à l’œil humain) peut réduire fortement l’accuracy.
+<p align="center">
+  <img src="./Securite/Model5/analyse_courbe_adv.png" alt="GProbabilité pour la Loi Binomiale" width="700">
+</p>
+Les conclusions sur la vulnérabilité du Model 5 par rapport aux attaques adversarial restent les mêmes que pour celles du Model 19.\
+Le modèle reste très sensible à ce type d’attaque : une petite perturbation (invisible à l’œil humain) peut réduire fortement la précision du modèle.
 
-#### Protection
+### Protection
 
-> **Image avec masques à insérer**
+Nous avons ensuite proteger notre model de la meme maniére que le modele 19.
 
-#### Bit Flip
+<p align="center">
+  <img src="./Securite/Model5/protected_adv_attack_mask_exemple_01_step005.png" alt="GProbabilité pour la Loi Binomiale" width="700">
+</p>
 
-Même remarque : les tests actuels n’évaluent qu’un modèle isolé, pas l’ensemble.
+Voici un détail de la pression du modèle protégé face au modèle sans protection pour un budget de 0,1 et un step de 0,05:
+
+| Modèle        | Test acc. (clean) [%] | Test acc. (FGM) [%] | Test acc. (PGD) [%] |
+|----------------|-----------------------|----------------------|----------------------|
+| **Non protégé** | 88.29                | 22.62                | 7.88                 |
+| **Protégé**     | 68.37                | 47.00                | 39.71                |
+
+On constate que le masque appliqué sur l'image se voit bien plus que celui sur le modèle 19. Cependant, le modèle reste sensible aux attaques mais garde une précision jugée correcte, que ce soit en subissant une attaque ou non.
+
+### b) Bit Flip
+
 
 ---
 
-## Conclusion (provisoire)
+## 9. Conclusion (provisoire)
 
 Le **modèle 5 compressé** offre un bon compromis entre performance et compatibilité embarquée.
 Combiné à l’approche **Ensemble Learning**, il pourrait constituer une base robuste et scalable pour le projet.
 
 ---
 
+## 10. Modèle 2
+
+### Caractéristiques (compression élevée)
+
+* **Flash** : 139,24 Ko  
+* **RAM** : 145,30 Ko  
+* **Opérations** : ~15,35 M  
+* **Précision** : 81 %
+
+---
+
+### Carte NUCLEO-L4R9IDISCOVERY
+
+Les cartes proposées pour ce modèle sont identiques à celles du **modèle 5**.  
+
+En effet, la **consommation mémoire RAM** de ce modèle est relativement élevée, ce qui limite son déploiement sur des cartes **à bas coût**.  
+De plus, bien qu’il nécessite environ **deux fois plus d’opérations** que le modèle 19 pour effectuer une inférence, il occupe **près de deux fois moins d’espace Flash**.  
+
+Ainsi, nous proposons de l’intégrer sur une **carte disposant d’une grande capacité Flash** et d’une **RAM suffisante** pour permettre la mise en œuvre d’un **ensemble learning** directement sur une seule carte.  
+Dans cette configuration, les modèles fonctionneraient **en série** (les uns après les autres) plutôt qu’en **parallèle** (tous simultanément), optimisant ainsi l’utilisation des ressources disponibles.
+
+L’avantage principal de cette approche est qu’elle permet d’obtenir une **précision élevée** sans augmenter ni l’**encombrement physique**, ni l’**espace de stockage** utilisé sur la carte.  
+
+En revanche, cette méthode **augmente significativement le temps d’inférence** : celui-ci est d’environ **0,128 s** pour un modèle unique, mais il est multiplié par le nombre de modèles embarqués.  
+
+Il est possible d’intégrer environ **11 modèles** sur la carte tout en conservant suffisamment de mémoire pour un **processus de décision** et d’autres **applications complémentaires**.\
+Dans cette configuration, la précision théorique pourrait atteindre **jusqu’à 99 %**, mais le **temps d’inférence total** s’élèverait alors à environ **1,408 s**.
+
+---
+
+## 11. Sécurité (pour 1 modele)
+
+Comme pour le modèle précédent, nous avons testé la robustesse face à des attaques adversariales et appliqué des techniques de protection.
+
+### a) Attaques adversariales
+
+**Masques obtenue pour un budget de 0,01 et un step de 0,001**
+<p align="center">
+  <img src="./Securite/Model5/adv_attack_mask_exemple_001_step0001.png" alt="GProbabilité pour la Loi Binomiale" width="400">
+</p>
+
+<p align="center">
+  <img src="./Securite/Model5/analyse_courbe_adv.png" alt="GProbabilité pour la Loi Binomiale" width="700">
+</p>
+Les conclusions sur la vulnérabilité du Model 5 par rapport aux attaques adversarial restent les mêmes que pour celles du Model 19.\
+Le modèle reste très sensible à ce type d’attaque : une petite perturbation (invisible à l’œil humain) peut réduire fortement la précision du modèle.
+
+### Protection
+
+Nous avons ensuite proteger notre model de la meme maniére que le modele 19.
+
+<p align="center">
+  <img src="./Securite/Model5/protected_adv_attack_mask_exemple_01_step005.png" alt="GProbabilité pour la Loi Binomiale" width="700">
+</p>
+
+Voici un détail de la pression du modèle protégé face au modèle sans protection pour un budget de 0,1 et un step de 0,05:
+
+| Modèle        | Test acc. (clean) [%] | Test acc. (FGM) [%] | Test acc. (PGD) [%] |
+|----------------|-----------------------|----------------------|----------------------|
+| **Non protégé** | 88.29                | 22.62                | 7.88                 |
+| **Protégé**     | 68.37                | 47.00                | 39.71                |
+
+On constate que le masque appliqué sur l'image se voit bien plus que celui sur le modèle 19. Cependant, le modèle reste sensible aux attaques mais garde une précision jugée correcte, que ce soit en subissant une attaque ou non.
+
+### b) Bit Flip
+
+
+---
+
+## 12. Conclusion (provisoire)
+
+Le **modèle 5 compressé** offre un bon compromis entre performance et compatibilité embarquée.
+Combiné à l’approche **Ensemble Learning**, il pourrait constituer une base robuste et scalable pour le projet.
+
+---
