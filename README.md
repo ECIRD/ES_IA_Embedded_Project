@@ -78,6 +78,12 @@ Des modèles avec une précision individuelle de **plus de 75 %** permettent d�
 
 ## 3. Modèle 19
 
+La fonction Resnet_block définit un bloc résiduel, : elle applique plusieurs convolutions successives avec normalisation et activation ReLU, puis ajoute une connexion directe (shortcut) entre l’entrée et la sortie du bloc. 
+
+Le modèle débute par une couche de convolution initiale, suivie de plusieurs blocs résiduels à différentes profondeurs (8, 16, puis 32 et 64 filtres), intercalés avec des couches de MaxPooling et de Dropout pour la régularisation.
+Enfin, une couche de GlobalAveragePooling et deux couches denses assurent la classification finale en 10 classes via une activation softmax.
+
+Le fait de commencer par une convolution de 8 filtre nous permet d'une part de diminuer l'espace mémoire flash mais cela peremt surtout d'avoir un besoin en mémoire RAM relativement bas car elle stocke le résidus 
 ### Caractéristiques sans compression
 
 * **Flash** : 268 Ko
@@ -183,9 +189,34 @@ Cette méthode rallonge le temps d’entraînement, mais améliore la résistanc
 
 ### b) Bit Flip
 
-Le protocole actuel n’attaque qu’un seul modèle à la fois ; nous ne pouvons donc pas encore évaluer la résistance de **l’ensemble complet** à une attaque physique (type laser).
+Le protocole actuel n’attaque qu’un seul modèle à la fois ; nous ne pouvons donc pas encore évaluer la résistance de **l’ensemble complet** à une attaque physique (type laser). Cependant nous pouvons évaluer la résistance d'un seul modèle face à ce type d'attaque.
 
----
+Pour protéger un modèle contre les perturbations de type bit-flip deux stratégies complémentaires peuvent être employées : RandBET et Clipping.
+
+RandBET (Randomized Bit Error Training) consiste à introduire aléatoirement des erreurs de bits simulées dans les poids du réseau pendant l’entraînement. Cette approche expose le modèle à des perturbations similaires à celles qu’il pourrait subir en conditions réelles, ce qui le rend plus robuste aux erreurs matérielles. En apprenant à tolérer ces perturbations, le réseau développe une meilleure stabilité de ses prédictions face à des modifications accidentelles de ses paramètres.
+
+Clipping vise à limiter la plage de valeurs des poids du réseau après chaque mise à jour. En contraignant les poids à rester dans un intervalle borné (par exemple entre −1 et 1), on évite que de petites erreurs de bits produisent des variations trop importantes dans les valeurs numériques. Cette méthode améliore donc la résilience numérique du modèle et réduit la sensibilité aux erreurs binaires.
+
+
+<p align="center">
+  <img src="./Securite/Model19/Result_bfa.png" alt="Résultat de l'attaque BFA du model 19" width="700">
+</p>
+
+# Interprétation
+
+On observe que la **courbe rouge (nominale)** chute très rapidement : la précision tombe fortement dès quelques bit-flips, indiquant une forte vulnérabilité aux erreurs matérielles.
+
+Les méthodes **clipping** et **RandBET + clipping**  maintiennent une meilleure précision pour un même nombre d’erreurs, surtout dans les **10 premiers bit-flips**. Cela montre qu’elles améliorent la robustesse du modèle.
+
+Les valeurs de clipping différentes (**0.1 vs 0.2**) montrent des variations modestes : un clipping plus fort (**0.2**) semble légèrement plus stable, mais au prix d’une petite perte initiale.
+
+Globalement, les modèles protégés conservent une précision autour de **10–15 %** même après de nombreux bit-flips, contrairement au modèle nominal qui s’effondre presque complètement.
+
+## Conclusion
+
+Ce graphique démontre que les techniques de **RandBET** et **Clipping** améliorent significativement la résilience du modèle face aux erreurs binaires. La combinaison **RandBET + Clipping** offre un compromis efficace entre **stabilité et performance**, limitant la dégradation de la précision lorsque le nombre de bit-flips augmente.
+
+
 
 ## 6. Conclusion (provisoire)
 
@@ -201,6 +232,8 @@ Des tests complémentaires sont nécessaires :
 ---
 
 ## 7. Modèle 5 compressé
+
+Ce modèle est plus lourd, il est composé de 3 couche de 2 convolution simple de 32, 64, 128 filtres, avec pour fonction d'activation Relu. Il termine sur une couche de 128 neuronnes.
 
 ### Caractéristiques (compression élevée)
 
@@ -235,7 +268,32 @@ Le modèle reste sensible à ce type d’attaque : une petite perturbation (invi
 
 #### Bit Flip
 
-Même remarque : les tests actuels n’évaluent qu’un modèle isolé, pas l’ensemble.
+<p align="center">
+  <img src="./Securite/Model5/Result_bfa.png" alt="Résultat de l'attaque BFA du model 5" width="700">
+</p>
+# Interprétation
+
+Pour une perturbation maximale d'environ **30 bit-flips**, les résultats montrent une différence nette de robustesse entre le **modèle nominal** et les **modèles protégés**. Le modèle nominal (sans protection) chute à **20 % de précision**, ce qui indique une dégradation quasi totale des performances due aux inversions de bits.
+
+En revanche, les modèles utilisant le **clipping seul** résistent nettement mieux :  
+
+- Avec un seuil de **0.1**, on obtient encore **60 % de précision**.  
+- Avec un seuil plus large (**0.2**), la précision descend à **45 %**.  
+
+Cela suggère qu’un clipping plus strict (**0.1**) limite mieux les effets des erreurs en restreignant la variation des poids, au prix d’une légère contrainte sur la capacité d’apprentissage.
+
+## Combinaison RandBET + Clipping
+
+Les combinaisons **RandBET + Clipping** donnent les meilleures performances globales :  
+
+- Avec **clipping = 0.1**, la précision atteint **75 %**, soit une amélioration considérable. Cela montre que l’entraînement sous perturbation (**RandBET**) permet au réseau de s’adapter à la présence d’erreurs binaires.  
+- Avec **clipping = 0.2**, la précision reste bonne (**50 %**), mais inférieure, ce qui confirme qu’un clipping trop permissif réduit l’effet protecteur.
+
+## Conclusion
+
+Ces résultats montrent que la combinaison **RandBET + Clipping** améliore fortement la tolérance aux bit-flips, surtout lorsque le seuil de clipping est modéré (**0.1**). Cette stratégie permet au modèle de conserver une performance élevée même en présence d’erreurs matérielles importantes, prouvant son efficacité en **robustesse numérique et matérielle**.
+
+
 
 ---
 
