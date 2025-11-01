@@ -102,3 +102,8 @@ Cœur : Cortex-M0+ @ 64 MHz
 Prix : ~16–18 €
 
 Commentaire : architecture récente, basse conso, excellente efficacité énergétique.
+
+
+## TODO Rapport
+
+Il reste a detailler les particularité des couches des differents modéles (resnet ect) + mettre les courbes d'apprentissage, detailler les partie sur le BFA, faires les petites conclusion + faire une grande conclusion

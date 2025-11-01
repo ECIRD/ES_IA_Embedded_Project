@@ -1,0 +1,157 @@
+
+
+Analyzing model 
+C:/Users/hugoc/STM32Cube/Repository/Packs/STMicroelectronics/X-CUBE-AI/10.2.0/Utilities/windows/stedgeai.exe analyze --target stm32l4 --name mnist -m C:/Users/hugoc/OneDrive/Documents/Hugo/ISMIN/Cours/S9/E_IA/Projet/Modeles/Model_light/model_light_229k_77.h5 --compression none --verbosity 1 --workspace C:/Users/hugoc/AppData/Local/Temp/mxAI_workspace150482623760010534843246555695117 --output C:/Users/hugoc/.stm32cubemx/mnist_output 
+ST Edge AI Core v2.2.0-20266 2adc00962 
+Creating c (debug) info json file C:\Users\hugoc\.stm32cubemx\mnist_output\mnist_c_info.json 
+  
+ Exec/report summary (analyze) 
+ -------------------------------------------------------------------------------------------------------------------------------------- 
+ model file         :   C:\Users\hugoc\OneDrive\Documents\Hugo\ISMIN\Cours\S9\E_IA\Projet\Modeles\Model_light\model_light_229k_77.h5    
+ type               :   keras                                                                                                           
+ c_name             :   mnist                                                                                                           
+ compression        :   none                                                                                                            
+ options            :   allocate-inputs, allocate-outputs                                                                               
+ optimization       :   balanced                                                                                                        
+ target/series      :   stm32l4                                                                                                         
+ workspace dir      :   C:\Users\hugoc\AppData\Local\Temp\mxAI_workspace150482623760010534843246555695117                               
+ output dir         :   C:\Users\hugoc\.stm32cubemx\mnist_output                                                                        
+ model_fmt          :   float                                                                                                           
+ model_name         :   model_light_229k_77                                                                                             
+ model_hash         :   0xda46e42e4fa74b41e9f937bb21f282f9                                                                              
+ params #           :   58,608 items (228.94 KiB)                                                                                       
+ -------------------------------------------------------------------------------------------------------------------------------------- 
+ input 1/1          :   'input_0', f32(1x32x32x3), 12.00 KBytes, activations                                                            
+ output 1/1         :   'dense', f32(1x10), 40 Bytes, activations                                                                       
+ macc               :   10,564,896                                                                                                      
+ weights (ro)       :   234,432 B (228.94 KiB) (1 segment)                                                                              
+ activations (rw)   :   143,468 B (140.11 KiB) (1 segment) *                                                                            
+ ram (total)        :   143,468 B (140.11 KiB) = 143,468 + 0 + 0                                                                        
+ -------------------------------------------------------------------------------------------------------------------------------------- 
+ (*) 'input'/'output' buffers are allocated in the activations buffer 
+Computing AI RT data/code size (target=stm32l4).. 
+ Model name - model_light_229k_77 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ m_id   layer (original)                             oshape                 param/size             macc            connected to 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 0      input_0 (None)                               [b:1,h:32,w:32,c:3] 
+        activation (Activation)                      [b:1,h:32,w:32,c:3]                          3,072                 input_0 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 1      batch_normalization (BatchNormalization)     [b:1,h:32,w:32,c:3]    6/24                  6,144              activation 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 2      conv2d (Conv2D)                              [b:1,h:32,w:32,c:32]   896/3,584           884,768     batch_normalization 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 3      activation_1 (Activation)                    [b:1,h:32,w:32,c:32]                        32,768                  conv2d 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 4      batch_normalization_1 (BatchNormalization)   [b:1,h:32,w:32,c:32]   64/256               65,536            activation_1 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 5      max_pooling2d (MaxPooling2D)                 [b:1,h:16,w:16,c:32]                        32,768   batch_normalization_1 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 7      conv2d_1 (Conv2D)                            [b:1,h:16,w:16,c:64]   18,496/73,984     4,718,656           max_pooling2d 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 8      activation_2 (Activation)                    [b:1,h:16,w:16,c:64]                        16,384                conv2d_1 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 9      batch_normalization_2 (BatchNormalization)   [b:1,h:16,w:16,c:64]   128/512              32,768            activation_2 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 10     conv2d_2 (Conv2D)                            [b:1,h:16,w:16,c:32]   18,464/73,856     4,718,624   batch_normalization_2 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 11     activation_3 (Activation)                    [b:1,h:16,w:16,c:32]                         8,192                conv2d_2 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 12     batch_normalization_3 (BatchNormalization)   [b:1,h:16,w:16,c:32]   64/256               16,384            activation_3 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 13     max_pooling2d_1 (MaxPooling2D)               [b:1,h:8,w:8,c:32]                           8,192   batch_normalization_3 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 15     flatten (Flatten)                            [b:1,c:2048]                                               max_pooling2d_1 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ 17     dense_dense (Dense)                          [b:1,c:10]             20,490/81,960        20,490                 flatten 
+        dense (Dense)                                [b:1,c:10]                                     150             dense_dense 
+ ------ -------------------------------------------- ---------------------- --------------- ----------- ----------------------- 
+ model: macc=10,564,896 weights=234,432 activations=-- io=-- 
+ Number of operations per c-layer 
+ ------- ------ ----------------------------------- ------------ -------------- 
+ c_id    m_id   name (type)                                  #op           type 
+ ------- ------ ----------------------------------- ------------ -------------- 
+ 0       0      activation (Nonlinearity)                  3,072     op_f32_f32 
+ 1       1      batch_normalization (ScaleBias)            6,144   smul_f32_f32 
+ 2       2      conv2d (Conv2D)                          884,768   smul_f32_f32 
+ 3       3      activation_1 (Nonlinearity)               32,768     op_f32_f32 
+ 4       4      batch_normalization_1 (ScaleBias)         65,536   smul_f32_f32 
+ 5       5      max_pooling2d (Pool)                      32,768   smul_f32_f32 
+ 6       7      conv2d_1 (Conv2D)                      4,718,656   smul_f32_f32 
+ 7       8      activation_2 (Nonlinearity)               16,384     op_f32_f32 
+ 8       9      batch_normalization_2 (ScaleBias)         32,768   smul_f32_f32 
+ 9       10     conv2d_2 (Conv2D)                      4,718,624   smul_f32_f32 
+ 10      11     activation_3 (Nonlinearity)                8,192     op_f32_f32 
+ 11      12     batch_normalization_3 (ScaleBias)         16,384   smul_f32_f32 
+ 12      13     max_pooling2d_1 (Pool)                     8,192   smul_f32_f32 
+ 13      17     dense_dense (Dense)                       20,490   smul_f32_f32 
+ 14      17     dense (Nonlinearity)                         150     op_f32_f32 
+ ------- ------ ----------------------------------- ------------ -------------- 
+ total                                                10,564,896 
+ Number of operation types 
+ ---------------- ------------ ----------- 
+ operation type              #           % 
+ ---------------- ------------ ----------- 
+ op_f32_f32             60,566        0.6% 
+ smul_f32_f32       10,504,330       99.4% 
+ Complexity report (model) 
+ ------ ----------------------- ------------------------- ------------------------- ---------- 
+ m_id   name                    c_macc                    c_rom                     c_id 
+ ------ ----------------------- ------------------------- ------------------------- ---------- 
+ 0      input_0                 |                  0.0%   |                  0.0%   [0] 
+ 1      batch_normalization     |                  0.1%   |                  0.0%   [1] 
+ 2      conv2d                  |||                8.4%   |                  1.5%   [2] 
+ 3      activation_1            |                  0.3%   |                  0.0%   [3] 
+ 4      batch_normalization_1   |                  0.6%   |                  0.1%   [4] 
+ 5      max_pooling2d           |                  0.3%   |                  0.0%   [5] 
+ 7      conv2d_1                ||||||||||||||||  44.7%   ||||||||||||||    31.6%   [6] 
+ 8      activation_2            |                  0.2%   |                  0.0%   [7] 
+ 9      batch_normalization_2   |                  0.3%   |                  0.2%   [8] 
+ 10     conv2d_2                |||||||||||||||   44.7%   ||||||||||||||    31.5%   [9] 
+ 11     activation_3            |                  0.1%   |                  0.0%   [10] 
+ 12     batch_normalization_3   |                  0.2%   |                  0.1%   [11] 
+ 13     max_pooling2d_1         |                  0.1%   |                  0.0%   [12] 
+ 17     dense_dense             |                  0.2%   ||||||||||||||||  35.0%   [13, 14] 
+ ------ ----------------------- ------------------------- ------------------------- ---------- 
+ macc=10,564,896 weights=234,432 act=143,468 ram_io=0 
+ Requested memory size by section - "stm32l4" target 
+ ------------------------------ -------- --------- ------- --------- 
+ module                             text    rodata    data       bss 
+ ------------------------------ -------- --------- ------- --------- 
+ NetworkRuntime1020_CM4_GCC.a      9,740         0       0         0 
+ mnist.o                             920       120   4,548       220 
+ mnist_data.o                         48        16      88         0 
+ lib (toolchain)*                    614        24       0         0 
+ ------------------------------ -------- --------- ------- --------- 
+ RT total**                       11,322       160   4,636       220 
+ ------------------------------ -------- --------- ------- --------- 
+ weights                               0   234,432       0         0 
+ activations                           0         0       0   143,468 
+ io                                    0         0       0         0 
+ ------------------------------ -------- --------- ------- --------- 
+ TOTAL                            11,322   234,592   4,636   143,688 
+ ------------------------------ -------- --------- ------- --------- 
+ *  toolchain objects (libm/libgcc*) 
+ ** RT AI runtime objects (kernels+infrastructure) 
+  Summary - "stm32l4" target 
+  ------------------------------------------------- 
+               FLASH (ro)     %*   RAM (rw)      % 
+  ------------------------------------------------- 
+  RT total         16,118   6.4%      4,856   3.3% 
+  ------------------------------------------------- 
+  TOTAL           250,550           148,324 
+  ------------------------------------------------- 
+  *  rt/total 
+Creating txt report file C:\Users\hugoc\.stm32cubemx\mnist_output\mnist_analyze_report.txt 
+elapsed time (analyze): 54.098s 
+Model file:      model_light_229k_77.h5 
+Total Flash:     250550 B (244.68 KiB) 
+    Weights:     234432 B (228.94 KiB) 
+    Library:     16118 B (15.74 KiB) 
+Total Ram:       148324 B (144.85 KiB) 
+    Activations: 143468 B (140.11 KiB) 
+    Library:     4856 B (4.74 KiB) 
+    Input:       12288 B (12.00 KiB included in Activations) 
+    Output:      40 B (included in Activations) 
+Done 
+Analyze complete on AI model
