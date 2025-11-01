@@ -331,7 +331,7 @@ Le modèle apprend ainsi à **tolérer** ces perturbations.
   <img src="./Securite/Model19/Result_bfa.png" alt="Courbe bfa Model19" width="700">
 </p>
 
-# Interprétation
+### Interprétation
 
 On observe que la **courbe rouge (nominale)** chute très rapidement : la précision tombe fortement dès quelques bit-flips, indiquant une forte vulnérabilité aux erreurs matérielles.
 
@@ -438,7 +438,7 @@ On constate que le masque appliqué sur l'image se voit bien plus que celui sur 
   <img src="./Securite/Model5/Result_bfa.png" alt="Courbe bfa Model15 width="700">
 </p>
 
-# Interprétation
+### Interprétation
 
 Pour une perturbation maximale d'environ **30 bit-flips**, les résultats montrent une différence nette de robustesse entre le **modèle nominal** et les **modèles protégés**. Le modèle nominal (sans protection) chute à **20 % de précision**, ce qui indique une dégradation quasi totale des performances due aux inversions de bits.
 
@@ -449,7 +449,7 @@ En revanche, les modèles utilisant le **clipping seul** résistent nettement mi
 
 Cela suggère qu’un clipping plus strict (**0.1**) limite mieux les effets des erreurs en restreignant la variation des poids, au prix d’une légère contrainte sur la capacité d’apprentissage.
 
-## Combinaison RandBET + Clipping
+### Combinaison RandBET + Clipping
 
 Les combinaisons **RandBET + Clipping** donnent les meilleures performances globales :  
 
@@ -546,7 +546,7 @@ On constate que le masque appliqué sur l'image se voit bien plus que celui sur 
   <img src="./Securite/Model2/Result_bfa.png" alt="Courbe bfa Model2" width="700">
 </p>
 
-# Interprétation
+### Interprétation
 
 Pour une perturbation maximale d'environ **30 bit-flips**, les résultats montrent une différence nette de robustesse entre le **modèle nominal** et les **modèles protégés**. Le modèle nominal (sans protection) chute à **12 % de précision**, ce qui indique une dégradation quasi totale des performances due aux inversions de bits.
 
@@ -557,7 +557,7 @@ En revanche, les modèles utilisant le **clipping seul** résistent nettement mi
 
 Cela suggère qu’un clipping plus strict (**0.1**) limite mieux les effets des erreurs en restreignant la variation des poids, au prix d’une légère contrainte sur la capacité d’apprentissage.
 
-## Combinaison RandBET + Clipping
+### Combinaison RandBET + Clipping
 
 Les combinaisons **RandBET + Clipping** donnent les meilleures performances globales :  
 
