@@ -126,11 +126,15 @@ Le modèle **`Model19`**, repose sur l’utilisation d’un bloc personnalisé, 
 
 ### Structure du modèle
 #### Bloc résidduel (nb_con)
+* on sauvegarde le résidus
 On répéte un nombre **nb_conv** de fois :
 * une couche **Conv2D (3×3)**,
 * une **Batch Normalization** ,
 * une fonction d’activation **ReLU**,
-
+puis 
+* une **Batch Normalization** ,
+* une **addition** avec le résidus
+* une fonction d’activation **ReLU**,
 
 #### Model_19
 On répète 3 fois :
