@@ -137,7 +137,6 @@ puis
 * une fonction d’activation **ReLU**,
 
 #### Model_19
-On répète 3 fois :
 * une couche **Conv2D (3×3)**,
 * une **Batch Normalization** ,
 * une fonction d’activation **ReLU**,
