@@ -122,9 +122,44 @@ Des modèles avec une précision individuelle de **plus de 75 %** permettent d�
 
 ## 3. Modèle 19
 
-Le modèle **`Model19`**, repose sur l’utilisation d’un bloc personnalisé, **`Resnet_block`**, qui introduit des connexions résiduelles afin de faciliter la propagation du gradient et d’améliorer la stabilité de l’entraînement. Chaque bloc **ResNet** commence par une vérification du nombre de canaux d’entrée : si celui-ci diffère du nombre de filtres requis, un **chemin de raccourci (shortcut)** est ajusté via une convolution 1×1 suivie d’une **Batch Normalization**. Le cœur du bloc effectue plusieurs combinaisons convolutionnelles (**num_comb**) avec des filtres de taille variable (**size**) et des activations **ReLU**, avant d’ajouter le résultat au chemin de raccourci pour former une **somme résiduelle**. L’ensemble est ensuite normalisé et réactivé pour stabiliser l’apprentissage.  
-Le modèle principal commence par une convolution initiale à **8 filtres (3×3)** suivie d’une normalisation et d’une activation **ReLU**, puis enchaîne plusieurs **blocs résiduels** : deux blocs à 8 filtres, suivis d’un **MaxPooling (2×2)** et d’un **Dropout(0.2)** ; puis deux autres blocs à 16 filtres, suivis d’un pooling et d’un **Dropout(0.3)**. Ensuite, le réseau ajoute des convolutions classiques à **32 puis 64 filtres**, chacune normalisée et activée, entrecoupées de **MaxPooling2D** et de **Dropout** pour la régularisation. Enfin, la partie classification utilise une **GlobalAveragePooling2D** pour réduire la dimension spatiale, suivie d’une couche **Dense(128, ReLU)**, d’un **Dropout(0.35)**, et d’une sortie **Dense(10, softmax)** correspondant aux dix classes du jeu **CIFAR-10**.  
+Le modèle **`Model19`**, repose sur l’utilisation d’un bloc personnalisé, **`Resnet_block`**, qui introduit des connexions résiduelles afin de faciliter la propagation du gradient et d’améliorer la stabilité de l’entraînement.
 
+### Structure du modèle
+#### Bloc résidduel (nb_con)
+On répéte un nombre **nb_conv** de fois :
+* une couche **Conv2D (3×3)**,
+* une **Batch Normalization** ,
+* une fonction d’activation **ReLU**,
+
+
+#### Model_19
+On répète 3 fois :
+* une couche **Conv2D (3×3)**,
+* une **Batch Normalization** ,
+* une fonction d’activation **ReLU**,
+* un bloc Résiduel (3)
+* un bloc Résiduel (3)
+* un **Dropout**,
+* un **MaxPooling(2×2)**
+Puis :
+* une couche **Conv2D (3×3)**,
+* une **Batch Normalization** ,
+* une fonction d’activation **ReLU**,
+* une couche **Conv2D (3×3)**,
+* une **Batch Normalization** ,
+* une fonction d’activation **ReLU**,
+* un **Dropout**,
+* un **MaxPooling(2×2)**
+* une couche **Conv2D (3×3)**,
+* une **Batch Normalization** ,
+* une fonction d’activation **ReLU**,
+* un **Dropout**,
+* un **MaxPooling(2×2)**
+* une couche **AveragePooling2D**
+* une couche de 128 neurone
+* une couche de sortie **Softmax**
+
+Le nombre de filtres appliqués à la première couche de convolution est de 8 et est **multiplié par 2 après chaque Maxpooling**.
 
 ### Caractéristiques sans compression
 
@@ -368,7 +403,24 @@ Des tests complémentaires sont nécessaires :
 
 ## 7. Modèle 5 compressé
 
-Le modèle **`model0`** traite les images à travers trois blocs convolutionnels de complexité croissante, utilisant respectivement **32**, **64** et **128 filtres** de taille 3×3 avec activation **ReLU** et **padding='same'** afin de préserver les dimensions spatiales. Chaque bloc est suivi de **Batch Normalization** pour stabiliser l’apprentissage, d’une couche de **MaxPooling2D (2×2)** pour réduire la taille spatiale des cartes de caractéristiques, et de **SpatialDropout2D** (0.3 puis 0.5) pour limiter le surapprentissage. Après ces blocs convolutionnels, les cartes sont aplaties via une couche **Flatten**, puis passées dans une couche **Dense(128, activation='relu')** suivie d’une **Batch Normalization** et d’un **Dropout(0.5)** pour renforcer la régularisation. Enfin, la couche de sortie **Dense(10, activation='softmax')** produit les probabilités associées aux dix classes de **CIFAR-10**.
+### Structure du modèle
+
+Chaque bloc convolutionnel comporte :
+
+* une couche **Conv2D (3×3)**,
+* une fonction d’activation **ReLU**,
+* une **Batch Normalization** pour stabiliser l’apprentissage,
+* une seconde couche **Conv2D (3×3)**,
+* une fonction d’activation **ReLU**,
+* une **Batch Normalization**,
+* un **Dropout** pour régulariser,
+* un **MaxPooling(2×2)** pour réduire la taille des cartes de caractéristiques.
+
+Le nombre de filtres appliqués à la première couche de convolution est de 32 et est **multiplié par 2 à chaque bloc**.
+La partie finale du réseau comprend :
+
+* deux couches denses (1024 et 512 neurones) avec **Dropout(0.3)**,
+* une couche de sortie **Softmax** à 10 neurones (correspondant aux classes de CIFAR-10).
 
 
 ### Caractéristiques (compression élevée)
@@ -472,7 +524,23 @@ Combiné à l’approche **Ensemble Learning**, il pourrait constituer une base 
 
 ## 10. Modèle 2
 
-Le modèle **`model2`**traite les données à travers plusieurs blocs convolutionnels composés de couches **Conv2D** à 32 filtres de taille 3×3 avec activation **ReLU**, suivies de **Batch Normalization** pour stabiliser l’apprentissage et de **SpatialDropout2D (0.25)** pour réduire le surapprentissage. Deux opérations de **MaxPooling2D (2×2)** assurent une réduction progressive de la taille spatiale des cartes de caractéristiques. Après les couches convolutionnelles, les données sont aplaties via une couche **Flatten**, puis passées à une couche **Dense** de sortie à **10 neurones** avec une activation **softmax**, correspondant aux dix classes de CIFAR-10.
+
+### Structure du modèle
+
+Chaque bloc convolutionnel comporte :
+
+* une couche **Conv2D (3×3)**,
+* une fonction d’activation **ReLU**,
+* une **Batch Normalization** pour stabiliser l’apprentissage,
+* une seconde couche **Conv2D (3×3)**,
+* une fonction d’activation **ReLU**,
+* une **Batch Normalization**,
+* un **Dropout** pour régulariser,
+* un **MaxPooling(2×2)** pour réduire la taille des cartes de caractéristiques.
+
+Le nombre de filtres appliqués à la première couche de convolution est de 32 et reste le même après chaque bloc de convolution.
+
+* une couche de sortie **Softmax** à 10 neurones (correspondant aux classes de CIFAR-10).
 
 
 ### Caractéristiques (compression élevée)
