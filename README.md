@@ -302,60 +302,60 @@ Ces perturbations peuvent être :
 - **accidentelles** (rayonnements cosmiques, usure du matériel),  
 - ou **intentionnelles** (attaques matérielles ciblées).
 
-### Mécanisme
+#### Mécanisme
 
 Un poids d’un réseau est généralement représenté sous forme de nombre flottant (ex. IEEE-754, 32 bits).  
 L’inversion d’un seul bit peut transformer significativement la valeur du poids.
 
-#### Exemple :
+##### Exemple :
 - Poids original : `0.25` → binaire : `00111101 00000000 00000000 00000000`  
 - Après inversion d’un bit (bit le plus significatif) → `10111101 00000000 00000000 00000000`  
   → nouvelle valeur : `-0.75`
 
 Ainsi, **une seule inversion** peut fortement modifier le comportement du modèle.
 
-### Conséquences
+#### Conséquences
 
 - **Perte rapide de précision** (jusqu’à effondrement total de la performance).  
 - **Altération des prédictions** ou comportement incohérent.  
 - **Vulnérabilité accrue** sur les modèles non protégés (dits *nominals*).
 
 
-## Protection
+#### Protection
 
-### Clipping des poids
+##### Clipping des poids
 
-#### Principe
-Le **clipping** consiste à **contraindre les poids** du réseau dans une plage de valeurs bornée :
+###### Principe
+* Le **clipping** consiste à **contraindre les poids** du réseau dans une plage de valeurs bornée :
 
-#### Objectif
-Limiter les valeurs extrêmes des poids pour réduire leur **sensibilité aux bit-flips**.
+###### Objectif
+* Limiter les valeurs extrêmes des poids pour réduire leur **sensibilité aux bit-flips**.
 
-#### Avantages
+###### Avantages
 - Simplicité de mise en œuvre.  
 - Réduction des effets des inversions de bits.  
 - Amélioration de la stabilité numérique.
 
-#### Limites
+###### Limites
 - Un clipping trop strict peut **ralentir ou réduire l’apprentissage** du modèle.  
 
-### RandBET (Random Bit Error Training)
+##### RandBET (Random Bit Error Training)
 
-#### Principe
-Le **RandBET** introduit **des erreurs de bits simulées** pendant la phase d’entraînement.  
-Le modèle apprend ainsi à **tolérer** ces perturbations.
+###### Principe
+* Le **RandBET** introduit **des erreurs de bits simulées** pendant la phase d’entraînement.  
+* Le modèle apprend ainsi à **tolérer** ces perturbations.
 
-#### Fonctionnement
-1. À chaque itération d’entraînement, des **bit-flips aléatoires** sont appliqués à un sous-ensemble des poids.  
-2. Le réseau est mis à jour en tenant compte de ces erreurs.  
-3. Au fil du temps, il **s’adapte naturellement** aux perturbations binaires.
+###### Fonctionnement
+* À chaque itération d’entraînement, des **bit-flips aléatoires** sont appliqués à un sous-ensemble des poids.
+* Le réseau est mis à jour en tenant compte de ces erreurs.  
+* Au fil du temps, il **s’adapte naturellement** aux perturbations binaires.
 
-#### Avantages
+###### Avantages
 - Robustesse accrue aux erreurs réelles.  
 - Adaptation dynamique du modèle.  
 - Compatible avec la plupart des architectures neuronales.
 
-#### Limites
+###### Limites
 - Entraînement plus long.  
 - Complexité de mise en œuvre légèrement supérieure au clipping.
 
@@ -369,7 +369,7 @@ Le modèle apprend ainsi à **tolérer** ces perturbations.
   <img src="./Securite/Model19/Result_bfa.png" alt="Courbe bfa Model19" width="700">
 </p>
 
-### Interprétation
+#### Interprétation
 
 On observe que la **courbe rouge (nominale)** chute très rapidement : la précision tombe fortement dès quelques bit-flips, indiquant une forte vulnérabilité aux erreurs matérielles.
 
@@ -379,7 +379,7 @@ Les valeurs de clipping différentes (**0.1 vs 0.2**) montrent des variations mo
 
 Globalement, les modèles protégés conservent une précision autour de **10–15 %** même après de nombreux bit-flips, contrairement au modèle nominal qui s’effondre presque complètement.
 
-## Conclusion
+#### Conclusion
 
 Ce graphique démontre que les techniques de **RandBET** et **Clipping** améliorent significativement la résilience du modèle face aux erreurs binaires. La combinaison **RandBET + Clipping** offre un compromis efficace entre **stabilité et performance**, limitant la dégradation de la précision lorsque le nombre de bit-flips augmente.
 
@@ -488,12 +488,12 @@ On constate que le masque appliqué sur l'image se voit bien plus que celui sur 
 
 ### b) Bit Flip
 
-### Résultat de l'attaque par bfa sur le modèle 5
+#### Résultat de l'attaque par bfa sur le modèle 5
 <p align="center">
   <img src="./Securite/Model5/Result_bfa.png" alt="Courbe bfa Model15 width="700">
 </p>
 
-### Interprétation
+#### Interprétation
 
 Pour une perturbation maximale d'environ **30 bit-flips**, les résultats montrent une différence nette de robustesse entre le **modèle nominal** et les **modèles protégés**. Le modèle nominal (sans protection) chute à **20 % de précision**, ce qui indique une dégradation quasi totale des performances due aux inversions de bits.
 
@@ -504,14 +504,14 @@ En revanche, les modèles utilisant le **clipping seul** résistent nettement mi
 
 Cela suggère qu’un clipping plus strict (**0.1**) limite mieux les effets des erreurs en restreignant la variation des poids, au prix d’une légère contrainte sur la capacité d’apprentissage.
 
-### Combinaison RandBET + Clipping
+#### Combinaison RandBET + Clipping
 
 Les combinaisons **RandBET + Clipping** donnent les meilleures performances globales :  
 
 - Avec **clipping = 0.1**, la précision atteint **75 %**, soit une amélioration considérable. Cela montre que l’entraînement sous perturbation (**RandBET**) permet au réseau de s’adapter à la présence d’erreurs binaires.  
 - Avec **clipping = 0.2**, la précision reste bonne (**50 %**), mais inférieure, ce qui confirme qu’un clipping trop permissif réduit l’effet protecteur.
 
-## Conclusion
+#### Conclusion
 
 Ces résultats montrent que la combinaison **RandBET + Clipping** améliore fortement la tolérance aux bit-flips, surtout lorsque le seuil de clipping est modéré (**0.1**). Cette stratégie permet au modèle de conserver une performance élevée même en présence d’erreurs matérielles importantes, prouvant son efficacité en **robustesse numérique et matérielle**.
 
@@ -610,14 +610,14 @@ On constate que le masque appliqué sur l'image se voit bien plus que celui sur 
 
 ### b) Bit Flip
 
-### Résultat de l'attaque par bfa sur le modèle 2
+#### Résultat de l'attaque par bfa sur le modèle 2
 
 
 <p align="center">
   <img src="./Securite/Model2/Result_bfa.png" alt="Courbe bfa Model2" width="700">
 </p>
 
-### Interprétation
+#### Interprétation
 
 Pour une perturbation maximale d'environ **30 bit-flips**, les résultats montrent une différence nette de robustesse entre le **modèle nominal** et les **modèles protégés**. Le modèle nominal (sans protection) chute à **12 % de précision**, ce qui indique une dégradation quasi totale des performances due aux inversions de bits.
 
@@ -628,14 +628,14 @@ En revanche, les modèles utilisant le **clipping seul** résistent nettement mi
 
 Cela suggère qu’un clipping plus strict (**0.1**) limite mieux les effets des erreurs en restreignant la variation des poids, au prix d’une légère contrainte sur la capacité d’apprentissage.
 
-### Combinaison RandBET + Clipping
+#### Combinaison RandBET + Clipping
 
 Les combinaisons **RandBET + Clipping** donnent les meilleures performances globales :  
 
 - Avec **clipping = 0.1**, la précision atteint **58 %**, soit une amélioration considérable. Cela montre que l’entraînement sous perturbation (**RandBET**) permet au réseau de s’adapter à la présence d’erreurs binaires.  
 - Avec **clipping = 0.2**, la précision reste bonne (**35 %**), mais inférieure, ce qui confirme qu’un clipping trop permissif réduit l’effet protecteur.
 
-## Conclusion
+#### Conclusion
 
 Ces résultats montrent que la combinaison **Clipping uniquement** améliore fortement la tolérance aux bit-flips, surtout lorsque le seuil de clipping est modéré (**0.1**). Cette stratégie permet au modèle de conserver une performance élevée même en présence d’erreurs matérielles importantes, prouvant son efficacité en **robustesse numérique et matérielle**.
 
