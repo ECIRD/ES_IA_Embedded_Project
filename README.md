@@ -648,3 +648,5 @@ Le **modèle 5 compressé** offre un bon compromis entre performance et compatib
 Combiné à l’approche **Ensemble Learning**, il pourrait constituer une base robuste et scalable pour le projet.
 
 ---
+
+Test
