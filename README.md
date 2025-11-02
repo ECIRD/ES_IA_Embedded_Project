@@ -341,7 +341,6 @@ Les valeurs de clipping différentes (**0.1 vs 0.2**) montrent des variations mo
 
 Globalement, les modèles protégés conservent une précision autour de **10–15 %** même après de nombreux bit-flips, contrairement au modèle nominal qui s’effondre presque complètement.
 
-## Conclusion
 
 Ce graphique démontre que les techniques de **RandBET** et **Clipping** améliorent significativement la résilience du modèle face aux erreurs binaires. La combinaison **RandBET + Clipping** offre un compromis efficace entre **stabilité et performance**, limitant la dégradation de la précision lorsque le nombre de bit-flips augmente.
 
@@ -465,7 +464,6 @@ Les combinaisons **RandBET + Clipping** donnent les meilleures performances glob
 - Avec **clipping = 0.1**, la précision atteint **75 %**, soit une amélioration considérable. Cela montre que l’entraînement sous perturbation (**RandBET**) permet au réseau de s’adapter à la présence d’erreurs binaires.  
 - Avec **clipping = 0.2**, la précision reste bonne (**50 %**), mais inférieure, ce qui confirme qu’un clipping trop permissif réduit l’effet protecteur.
 
-## Conclusion
 
 Ces résultats montrent que la combinaison **RandBET + Clipping** améliore fortement la tolérance aux bit-flips, surtout lorsque le seuil de clipping est modéré (**0.1**). Cette stratégie permet au modèle de conserver une performance élevée même en présence d’erreurs matérielles importantes, prouvant son efficacité en **robustesse numérique et matérielle**.
 
@@ -591,8 +589,6 @@ Les combinaisons **RandBET + Clipping** donnent les meilleures performances glob
 
 - Avec **clipping = 0.1**, la précision atteint **58 %**, soit une amélioration considérable. Cela montre que l’entraînement sous perturbation (**RandBET**) permet au réseau de s’adapter à la présence d’erreurs binaires.  
 - Avec **clipping = 0.2**, la précision reste bonne (**35 %**), mais inférieure, ce qui confirme qu’un clipping trop permissif réduit l’effet protecteur.
-
-## Conclusion
 
 Ces résultats montrent que la combinaison **Clipping uniquement** améliore fortement la tolérance aux bit-flips, surtout lorsque le seuil de clipping est modéré (**0.1**). Cette stratégie permet au modèle de conserver une performance élevée même en présence d’erreurs matérielles importantes, prouvant son efficacité en **robustesse numérique et matérielle**.
 
