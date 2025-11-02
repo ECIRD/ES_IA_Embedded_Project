@@ -10,13 +10,13 @@
 Contient les programmes utilisés pour implémenter les modèles sur cartes et les tester :
 
 - `Communication_NN.py` : script Python permettant de tester un modèle implémenté sur la carte.  
-- `Projet_CUBE.zip` : projet STM32CubeIDE utilisé pour déployer les modèles sur la carte **NUCLEO-L4R9IDISCOVERY**.
+- `Projet_CUBE_modeleX.zip` : projet STM32CubeIDE utilisé pour déployer du modèle X (2, 5 ou 19_8_compression (Hight, None)) sur la carte **NUCLEO-L4R9IDISCOVERY**.
 
 ### Historique des modèles
 Répertoire stockant l'ensemble des modèles réalisés (`.h5`), leurs rapports d'analyse (`.txt`) ainsi que l'historique détaillé avec leurs caractéristiques (`Création_du_modèle.txt`). Contient également un **Jupyter Notebook** ayant servi à préparer les différents modèles.
 
 ### Modèles retenus
-Contient les modèles qui ont été retenus suite aux tests. Ces modèles sont ceux traités dans le rapport ; leur nomenclature (`Modele_N`) n'est pas corrélée à l'historique des modèles.
+Contient les modèles qui ont été retenus suite aux tests. Ces modèles sont ceux traités dans le rapport ; leur nomenclature (`Modele_N`) n'est pas corrélée à l'historique des modèles. Ce répertoire contient aussi les données d'entraînement et de test.
 
 ### Rapport_analyses
 Contient de nombreux rapports d'analyse des modèles générés (rapports produits par STM32CubeIDE).
@@ -122,47 +122,9 @@ Des modèles avec une précision individuelle de **plus de 75 %** permettent d�
 
 ## 3. Modèle 19
 
-Le modèle **`Model19`**, repose sur l’utilisation d’un bloc personnalisé, **`Resnet_block`**, qui introduit des connexions résiduelles afin de faciliter la propagation du gradient et d’améliorer la stabilité de l’entraînement.
+Le modèle **`Model19`**, repose sur l’utilisation d’un bloc personnalisé, **`Resnet_block`**, qui introduit des connexions résiduelles afin de faciliter la propagation du gradient et d’améliorer la stabilité de l’entraînement. Chaque bloc **ResNet** commence par une vérification du nombre de canaux d’entrée : si celui-ci diffère du nombre de filtres requis, un **chemin de raccourci (shortcut)** est ajusté via une convolution 1×1 suivie d’une **Batch Normalization**. Le cœur du bloc effectue plusieurs combinaisons convolutionnelles (**num_comb**) avec des filtres de taille variable (**size**) et des activations **ReLU**, avant d’ajouter le résultat au chemin de raccourci pour former une **somme résiduelle**. L’ensemble est ensuite normalisé et réactivé pour stabiliser l’apprentissage.  
+Le modèle principal commence par une convolution initiale à **8 filtres (3×3)** suivie d’une normalisation et d’une activation **ReLU**, puis enchaîne plusieurs **blocs résiduels** : deux blocs à 8 filtres, suivis d’un **MaxPooling (2×2)** et d’un **Dropout(0.2)** ; puis deux autres blocs à 16 filtres, suivis d’un pooling et d’un **Dropout(0.3)**. Ensuite, le réseau ajoute des convolutions classiques à **32 puis 64 filtres**, chacune normalisée et activée, entrecoupées de **MaxPooling2D** et de **Dropout** pour la régularisation. Enfin, la partie classification utilise une **GlobalAveragePooling2D** pour réduire la dimension spatiale, suivie d’une couche **Dense(128, ReLU)**, d’un **Dropout(0.35)**, et d’une sortie **Dense(10, softmax)** correspondant aux dix classes du jeu **CIFAR-10**.  
 
-### Structure du modèle
-#### Bloc résidduel (nb_con)
-* on sauvegarde le résidus
-On répéte un nombre **nb_conv** de fois :
-* une couche **Conv2D (3×3)**,
-* une **Batch Normalization** ,
-* une fonction d’activation **ReLU**,
-puis 
-* une **Batch Normalization** ,
-* une **addition** avec le résidus
-* une fonction d’activation **ReLU**,
-
-#### Model_19
-* une couche **Conv2D (3×3)**,
-* une **Batch Normalization** ,
-* une fonction d’activation **ReLU**,
-* un bloc Résiduel (3)
-* un bloc Résiduel (3)
-* un **Dropout**,
-* un **MaxPooling(2×2)**
-Puis :
-* une couche **Conv2D (3×3)**,
-* une **Batch Normalization** ,
-* une fonction d’activation **ReLU**,
-* une couche **Conv2D (3×3)**,
-* une **Batch Normalization** ,
-* une fonction d’activation **ReLU**,
-* un **Dropout**,
-* un **MaxPooling(2×2)**
-* une couche **Conv2D (3×3)**,
-* une **Batch Normalization** ,
-* une fonction d’activation **ReLU**,
-* un **Dropout**,
-* un **MaxPooling(2×2)**
-* une couche **AveragePooling2D**
-* une couche de 128 neurone
-* une couche de sortie **Softmax**
-
-Le nombre de filtres appliqués à la première couche de convolution est de 8 et est **multiplié par 2 après chaque Maxpooling**.
 
 ### Caractéristiques sans compression
 
@@ -379,28 +341,20 @@ Les valeurs de clipping différentes (**0.1 vs 0.2**) montrent des variations mo
 
 Globalement, les modèles protégés conservent une précision autour de **10–15 %** même après de nombreux bit-flips, contrairement au modèle nominal qui s’effondre presque complètement.
 
-#### Conclusion
+## Conclusion
 
 Ce graphique démontre que les techniques de **RandBET** et **Clipping** améliorent significativement la résilience du modèle face aux erreurs binaires. La combinaison **RandBET + Clipping** offre un compromis efficace entre **stabilité et performance**, limitant la dégradation de la précision lorsque le nombre de bit-flips augmente.
 
-
-
-
-
-
-
 ---
 
-## 6. Conclusion (provisoire)
+## 6. Conclusion
 
-Le **modèle light 233k_80** constitue un **excellent compromis** entre taille mémoire, coût et précision.\
-Il est adapté à un **déploiement multi-carte** en ensemble learning, permettant d’améliorer la précision globale tout en réduisant les coûts.
+Le **modèle 19** représente un **bon compromis** entre **taille mémoire**, **coût** et **précision**.  
 
-Des tests complémentaires sont nécessaires :
+Il présente toutefois une **vulnérabilité face aux attaques adversariales**, principalement en raison de la nature de l’**ensemble learning**. Son **principal point faible** réside dans sa **sensibilité aux attaques Bit Flip**, qui demeurent efficaces même après la mise en place de protections.  
 
-* validation sur carte réelle,
-* diversification des entraînements pour réduire la corrélation des erreurs,
-* évaluation approfondie de la robustesse (bruit, laser, bit flip, etc.).
+Cependant, la structure en **ensemble de modèles** constitue ici un atout : le fait de répartir les modèles sur **plusieurs cartes** rend les attaques plus **complexes**, **longues** et **coûteuses** à exécuter.
+
 
 ---
 
@@ -511,17 +465,20 @@ Les combinaisons **RandBET + Clipping** donnent les meilleures performances glob
 - Avec **clipping = 0.1**, la précision atteint **75 %**, soit une amélioration considérable. Cela montre que l’entraînement sous perturbation (**RandBET**) permet au réseau de s’adapter à la présence d’erreurs binaires.  
 - Avec **clipping = 0.2**, la précision reste bonne (**50 %**), mais inférieure, ce qui confirme qu’un clipping trop permissif réduit l’effet protecteur.
 
-#### Conclusion
+## Conclusion
 
 Ces résultats montrent que la combinaison **RandBET + Clipping** améliore fortement la tolérance aux bit-flips, surtout lorsque le seuil de clipping est modéré (**0.1**). Cette stratégie permet au modèle de conserver une performance élevée même en présence d’erreurs matérielles importantes, prouvant son efficacité en **robustesse numérique et matérielle**.
 
 
 ---
 
-## 9. Conclusion (provisoire)
+## 9. Conclusion 
 
-Le **modèle 5 compressé** offre un bon compromis entre performance et compatibilité embarquée.
-Combiné à l’approche **Ensemble Learning**, il pourrait constituer une base robuste et scalable pour le projet.
+Le **modèle 5 compressé** offre un **bon compromis entre performances et sécurité**.  
+
+En effet, ce modèle présente une **précision satisfaisante** et une **bonne résistance aux attaques** une fois les **protections activées**, notamment face aux **Bit Flip Attacks (BFA)**.\ 
+Son principal inconvénient réside dans sa **taille en Flash et en RAM**, qui nécessite une carte disposant d’une **grande capacité mémoire**, augmentant ainsi le **coût global de l’implémentation**.
+
 
 ---
 
@@ -635,18 +592,58 @@ Les combinaisons **RandBET + Clipping** donnent les meilleures performances glob
 - Avec **clipping = 0.1**, la précision atteint **58 %**, soit une amélioration considérable. Cela montre que l’entraînement sous perturbation (**RandBET**) permet au réseau de s’adapter à la présence d’erreurs binaires.  
 - Avec **clipping = 0.2**, la précision reste bonne (**35 %**), mais inférieure, ce qui confirme qu’un clipping trop permissif réduit l’effet protecteur.
 
-#### Conclusion
+## Conclusion
 
 Ces résultats montrent que la combinaison **Clipping uniquement** améliore fortement la tolérance aux bit-flips, surtout lorsque le seuil de clipping est modéré (**0.1**). Cette stratégie permet au modèle de conserver une performance élevée même en présence d’erreurs matérielles importantes, prouvant son efficacité en **robustesse numérique et matérielle**.
 
 
 ---
 
-## 12. Conclusion (provisoire)
+## 12. Conclusion
 
-Le **modèle 5 compressé** offre un bon compromis entre performance et compatibilité embarquée.
-Combiné à l’approche **Ensemble Learning**, il pourrait constituer une base robuste et scalable pour le projet.
+Le **modèle 2 compressé** constitue un **excellent compromis** entre le **modèle 19** et le **modèle 5**.  
+En effet, ce modèle occupe **peu d’espace Flash**, mais requiert une **quantité importante de RAM**. Il peut donc être **implémenté en ensemble learning sur une seule carte**, permettant d’obtenir une **grande précision à faible coût**, au **détriment du temps d’inférence**.  
+
+De plus, ce modèle présente une **bonne résistance face aux différentes attaques**, une fois les **mécanismes de protection** mis en place. De plus, les attaques BFA restent coûteuses contre ce type d'implémentation carte, les poids sont dispersé un peu partout dans la Flash de la carte.
+
 
 ---
 
-Test
+## Comparaison des modéles
+
+| **Critère**                                  | **Modèle 19 (ResNet modifié)**                                    | **Modèle 5 (compressé)**                            | **Modèle 2 (léger)**                                |
+|---------------------------------------------|-------------------------------------------------------------------|-----------------------------------------------------|-----------------------------------------------------|
+| **Architecture**                             | CNN résiduel léger (blocs ResNet personnalisés)                   | CNN à 3 blocs convolutionnels + couches denses, régularisation forte | CNN simple avec 2 couches MaxPooling + Dropout       |
+| **Taille (Flash)**                           | 268 Ko (235 Ko compressé)                                         | 1,25 Mo (compressé)                                 | 139 Ko (compressé)                                  |
+| **RAM utilisée**                             | 85,7 Ko                                                           | 147,8 Ko                                            | 145,3 Ko                                            |
+| **Nombre d’opérations**                      | ≈ 8,5 M                                                           | ≈ 39,3 M                                            | ≈ 15,3 M                                            |
+| **Précision (CIFAR-10)**                     | 82–83 %                                                           | 90 %                                                | 81 %                                                |
+| **Carte cible principale**                   | NUCLEO-G0B1RE / F446RE / L452RE                                   | NUCLEO-L4R9IDISCOVERY                               | NUCLEO-L4R9IDISCOVERY                               |
+| **Temps d’inférence estimé**                 | 66–132 ms selon la carte                                           | 327 ms                                              | 128 ms × nombre de modèles                          |
+| **Ensemble Learning possible**               | Oui, très favorable (taille réduite)                              | Limité (taille importante)                          | Oui, en série sur une seule carte                   |
+| **Résistance aux attaques adversariales**    | Faible sans défense (90 → 35 %) ; moyenne après adversarial training | Faible sans défense (88 → 7 %) ; moyenne après défense | Faible sans défense (81 → 10 %) ; similaire au modèle 19 |
+| **Résistance aux Bit Flips**                 | Moyenne avec Clipping + RandBET (~15 %)                           | Bonne avec Clipping + RandBET (jusqu’à 75 %)        | Moyenne avec protections identiques                 |
+| **Avantages principaux**                     | Compact, stable, idéal pour l’ensemble learning                   | Très bonne précision, bon compromis perf/sécurité   | Très léger, excellent potentiel pour ensemble learning |
+| **Inconvénients principaux**                 | Vulnérable sans défense efficace                                  | Exigeante en mémoire et en ressources matérielles   | Temps d’inférence élevé si plusieurs modèles en série |
+| **Précision théorique (Ensemble Learning)**  | ~94,5 % (5 modèles)                                               | ~94,5 % (5 modèles)                                 | Jusqu’à 99 % (11 modèles en série)                  |
+
+
+## Conclusion
+
+Nous avons testé **trois approches distinctes** afin d’obtenir un **ensemble de solutions complémentaires** :  
+- un **modèle léger**, facilement déployable en **ensemble learning sur plusieurs cartes** ;  
+- un **modèle plus coûteux**, mais offrant une **meilleure précision** et une **plus grande résistance aux attaques** ;  
+- un **modèle très efficace en ensemble learning sur une seule carte**, privilégiant la précision au **détriment du temps d’inférence**.  
+
+Chaque modèle repose sur une **architecture spécifique**, conçue pour explorer différents compromis entre **performance**, **sécurité** et **contraintes matérielles**.  
+
+Ces modèles ont été évalués sur l’**échantillon CIFAR-10**, puis soumis à diverses **attaques de sécurité** :  
+- des **attaques adversariales** de type **PGD** et **FGSM**,  
+- ainsi que des **attaques Bit Flip (BFA)**, afin de mesurer leur **robustesse effective en conditions réelles**.  
+
+Nous avons également cherché à **réduire ou maintenir le coût d’implémentation** par rapport à la solution initialement proposée.  
+
+En conclusion, **les trois solutions sont viables**, chacune répondant à un **contexte d’utilisation différent** :  
+la **vitesse de traitement**, le **niveau de risque d’attaque**, ou encore les **contraintes budgétaires et matérielles** orienteront le choix du modèle le plus adapté.
+
+Cependant, il est bon de noter que nous n'avons pas pu réaliser les tests du modèle 2 et du modèle 19 en ensemble learning, ni même sur d'autres cartes que la NUCLEO-L4R9IDISCOVERY.
